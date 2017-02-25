@@ -60,3 +60,6 @@ btnCloseSearch.click(function (e) {
     e.preventDefault();
     searchForm.fadeOut(300);
 });
+
+
+

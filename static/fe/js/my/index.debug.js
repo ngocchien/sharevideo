@@ -20,3 +20,4 @@ $('.view-more .btn-view').on('click', function () {
         }
     });
 });
+
