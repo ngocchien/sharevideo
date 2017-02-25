@@ -1,0 +1,29 @@
+<?php $arr_category = unserialize(ARR_CATEGORY); ?>
+<div id="side-menu">
+    <div class="side-menu-container">
+        <div class="channel-container">
+            <h1 class="title">
+                Channels
+            </h1>
+            <div class="list">
+                <ul>
+                    <?php foreach ($arr_category as $category): ?>
+                        <li><a href="<?php echo $this->Url('category', ['cateSlug' => $category['cate_slug'], 'cateId' => $category['cate_id']]) ?>"><?php echo $category['cate_name']; ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h1 class="title">
+                Theo dõi thêm
+            </h1>
+            <div class="list">
+                <ul>
+                    <li><a href="https://www.facebook.com/videosclipfunny" target="_blank" class="facebook"></a></li>
+                    <li><a href="javascript:;" class="google"></a></li>
+                    <li><a href="javascript:;" class="twitter"></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

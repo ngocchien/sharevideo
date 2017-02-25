@@ -77,13 +77,80 @@ class IndexController extends MyController
 
     public function indexAction()
     {
-        //$this->test();
-        $config_fb = General::$config_fb;
-        $fb = new \Facebook\Facebook([
-            'app_id' => $config_fb['appId'],
-            'app_secret' => $config_fb['secret']
+        //,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27
+        $instanceSearch = new \My\Search\Content();
+        $arr_content = $instanceSearch->getList([
+            'search_tag_id' => '*,10,*'
         ]);
-        $fb->setDefaultAccessToken(General::$face_traffic['mannhi_token']);
+        echo '<pre>';
+        print_r($arr_content);
+        echo '</pre>';
+        die();
+        $arrTag = Array('Mashable', 'The WaterCooler', 'trailer mix', 'trailer', 'bill murray', 'trailer mix mashable', 'mashable watercooler', 'motion picture', 'dumb', 'and', 'dumber', 'dumb and dumber', 'drama', 'academy awards', 'oscars', 'dramatic', 'remix', 'trailer mix show', 'dumb and dumber trailer', 'jim carrey', 'jeff daniels', 'pretty bird', 'dumb and dumber trailer edit', 'dumb and dumber 2', 'dumb and dumber most annoying sound in the world', 'dumb and dumber toilet scene', 'dumb and dumber full movie');
+//        $arrTag = Array('Mashable', 'The WaterCooler');
+        $serviceTag= $this->serviceLocator->get('My\Models\Tags');
+        $instanceSearchTag = new \My\Search\Tag();
+
+        foreach ($arrTag as $tag) {
+            $condition['in_tag_slug'][] = General::getSlug($tag);
+        }
+        $arr_tag_list = $instanceSearchTag->getList($condition, ['tag_id' => ['order' => 'asc']]);
+        $arr_tag_exits = [];
+        $arr_tag_id = [];
+        if ($arr_tag_list) {
+            foreach ($arr_tag_list as $arr) {
+                $arr_tag_id[] = $arr['tag_id'];
+                $arr_tag_exits[] = $arr['tag_slug'];
+            }
+        }
+
+        foreach ($arrTag as $tag) {
+            if (in_array(General::getSlug($tag), $arr_tag_exits)) {
+                continue;
+            }
+            $arr_data_tag = [
+                'tag_name' => $tag,
+                'tag_slug' => General::getSlug($tag),
+                'user_created' => 1,
+                'created_date' => time(),
+                'tag_status' => 1
+            ];
+            $tag_id = $instanceSearchTag->add($arr_data_tag);
+            if ($tag_id > 0) {
+                $arr_tag_id[] = $tag_id;
+            }
+            continue;
+        }
+        echo '<pre>';
+        print_r();
+        echo '</pre>';
+        die();
+
+//        if
+        echo '<pre>';
+        print_r($arr_tag_list);
+        echo '</pre>';
+        die();
+        echo '<pre>';
+        print_r($condition);
+        echo '</pre>';
+        die();
+        echo '<pre>';
+        print_r('111');
+        echo '</pre>';
+        die();
+        return;
+        $instanceJob = new \My\Job\JobCategory();
+        $instanceJob->addJob(SEARCH_PREFIX . 'crawlerYoutube', [], $this->serviceLocator);
+        die();
+
+        //$this->test();
+//        $config_fb = General::$config_fb;
+//        $fb = new \Facebook\Facebook([
+//            'app_id' => $config_fb['appId'],
+//            'app_secret' => $config_fb['secret']
+//        ]);
+//        $fb->setDefaultAccessToken(General::$face_traffic['mannhi_token']);
 
 
         return;

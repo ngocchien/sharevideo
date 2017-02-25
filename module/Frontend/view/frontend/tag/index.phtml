@@ -1,0 +1,84 @@
+<div id="tag-page">
+    <div class="search-value">
+        <h1>
+            Tag: <?php echo $this->tagDetail['tag_name'] ?>
+        </h1>
+    </div>
+    <div class="container page-width">
+        <div class="main-content">
+            <div class="inside-container">
+                <div class="inside">
+                    <h4 class="name">
+                        <a>List Post In Tag</a>
+                        <span></span>
+                    </h4>
+                    <div class="videos">
+                        <?php foreach ($this->arrContentList as $arr_content):
+                            $cont_image = json_decode($arr_content['cont_image'], true);
+                            ?>
+                            <div class="post">
+                                <div class="poster"
+                                     style="background-image: url(<?php echo $cont_image['320x180']; ?>)">
+                                    <div class="bg-gradient"></div>
+                                    <p class="duration">00:54</p>
+                                    <p class="view"><span
+                                            class="number"><?php echo number_format($arr_content['cont_views']); ?></span>
+                                        views</p>
+                                    <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                       title="<?php echo $arr_content['cont_title']; ?>" class="link">
+                                    </a>
+                                </div>
+                                <div class="content">
+                                    <h3 class="title">
+                                        <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>o"
+                                           title="<?php echo $arr_content['cont_title']; ?>">
+                                            <?php echo $arr_content['cont_title']; ?>
+                                        </a>
+                                    </h3>
+                                    <p class="description">
+                                        <?php echo $arr_content['cont_description']; ?>
+                                    </p>
+                                    <p class="created"><span
+                                            class="time"><?php echo \My\General::formatDateString($arr_content['created_date']) ?></span>
+                                    </p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <h4 class="name">Top view in Tag</h4>
+            <div class="videos">
+                <?php foreach ($this->arrContentHot as $arr_content):
+                    $cont_image = json_decode($arr_content['cont_image'], true);
+                    ?>
+                    <div class="post">
+                        <div class="poster"
+                             style="background: url(<?php echo $cont_image['120x90']; ?>) no-repeat center;">
+                            <div class="bg-gradient"></div>
+                            <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                               title="<?php echo $arr_content['cont_title']; ?>" class="link">
+                            </a>
+                        </div>
+                        <div class="content">
+                            <h3 class="title">
+                                <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                   title="<?php echo $arr_content['cont_title']; ?>">
+                                    <?php echo $arr_content['cont_title']; ?>
+                                </a>
+                            </h3>
+                            <p class="view"><span
+                                    class="number"><?php echo number_format($arr_content['cont_views']); ?></span> view
+                            </p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <div class="view-more" style="display: none;">
+        <a href="#" class="btn-view">Nhiều hơn</a>
+    </div>
+</div>

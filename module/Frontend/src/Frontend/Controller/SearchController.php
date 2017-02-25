@@ -7,11 +7,6 @@ use My\Controller\MyController,
 
 class SearchController extends MyController
 {
-
-    public function __construct()
-    {
-    }
-
     public function indexAction()
     {
         try {
@@ -42,7 +37,9 @@ class SearchController extends MyController
                     'cont_main_image',
                     'cont_description',
                     'cont_id',
-                    'cate_id'
+                    'cate_id',
+                    'cont_image',
+                    'created_date'
                 ]
             );
 
@@ -52,19 +49,19 @@ class SearchController extends MyController
             $paging = $helper($params['module'], $params['__CONTROLLER__'], $params['action'], $intTotal, $intPage, $intLimit, 'search', $params);
 
             $this->renderer = $this->serviceLocator->get('Zend\View\Renderer\PhpRenderer');
-            $this->renderer->headTitle(html_entity_decode('Tìm kiếm - ' . $params['keyword'] . General::TITLE_META));
+            $this->renderer->headTitle(html_entity_decode('Search - ' . $params['keyword'] . General::TITLE_META));
             $this->renderer->headMeta()->setProperty('url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('search', ['keyword' => $params['keyword'], 'page' => $intPage]));
             $this->renderer->headMeta()->appendName('og:url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('search', ['keyword' => $params['keyword'], 'page' => $intPage]));
-            $this->renderer->headMeta()->appendName('title', html_entity_decode('Tìm kiếm - ' . $params['keyword'] . General::TITLE_META));
-            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode('Tìm kiếm - ' . $params['keyword'] . General::TITLE_META));
-            $this->renderer->headMeta()->appendName('keywords', html_entity_decode($params['keyword'],str_replace('')));
+            $this->renderer->headMeta()->appendName('title', html_entity_decode('Search - ' . $params['keyword'] . General::TITLE_META));
+            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode('Search - ' . $params['keyword'] . General::TITLE_META));
+            $this->renderer->headMeta()->appendName('keywords', html_entity_decode($params['keyword'], str_replace('')));
             $this->renderer->headMeta()->appendName('description', html_entity_decode($params['keyword']));
             $this->renderer->headMeta()->setProperty('og:description', html_entity_decode($params['keyword']));
 
             $this->renderer->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('search', ['keyword' => $params['keyword']])));
             $this->renderer->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('search', ['keyword' => $params['keyword']])));
 
-            //get 50 keyword gần giống nhất
+            //get 40 keyword gần giống nhất
             $instanceSearchKeyword = new \My\Search\Keyword();
             $arrKeywordList = $instanceSearchKeyword->getListLimit(
                 ['full_text_keyname' => $key_name],
@@ -86,14 +83,16 @@ class SearchController extends MyController
                 'intTotal' => $intTotal
             ];
         } catch (\Exception $exc) {
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r([
+                    'code' => $exc->getCode(),
+                    'messages' => $exc->getMessage()
+                ]);
+                echo '</pre>';
+                die();
+            }
             return $this->redirect()->toRoute('404', array());
-            echo '<pre>';
-            print_r([
-                'code' => $exc->getCode(),
-                'messages' => $exc->getMessage()
-            ]);
-            echo '</pre>';
-            die();
         }
     }
 
@@ -133,7 +132,9 @@ class SearchController extends MyController
                     'cont_main_image',
                     'cont_description',
                     'cont_id',
-                    'cate_id'
+                    'cate_id',
+                    'cont_image',
+                    'created_date'
                 ]
             );
             $intTotal = $instanceSearchContent->getTotal(['full_text_title' => $arrKeyDetail['key_name']]);
@@ -148,8 +149,8 @@ class SearchController extends MyController
             $this->renderer->headMeta()->appendName('title', html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
             $this->renderer->headMeta()->setProperty('og:title', html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
             $this->renderer->headMeta()->appendName('keywords', html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
-            $this->renderer->headMeta()->appendName('description', html_entity_decode('Danh sách bài viết trong từ khoá : ' . $arrKeyDetail['key_name']) . General::TITLE_META);
-            $this->renderer->headMeta()->setProperty('og:description', html_entity_decode('Danh sách bài viết trong từ khoá : ' . $arrKeyDetail['key_name']) . General::TITLE_META);
+            $this->renderer->headMeta()->appendName('description', html_entity_decode('List post in keyword : ' . $arrKeyDetail['key_name']) . General::TITLE_META);
+            $this->renderer->headMeta()->setProperty('og:description', html_entity_decode('List post in keyword : ' . $arrKeyDetail['key_name']) . General::TITLE_META);
 
             $this->renderer->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id']))));
             $this->renderer->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id']))));
@@ -181,14 +182,16 @@ class SearchController extends MyController
                 'arrKeyDetail' => $arrKeyDetail
             );
         } catch (\Exception $exc) {
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r([
+                    'code' => $exc->getCode(),
+                    'messages' => $exc->getMessage()
+                ]);
+                echo '</pre>';
+                die();
+            }
             return $this->redirect()->toRoute('404', array());
-            echo '<pre>';
-            print_r([
-                'code' => $exc->getCode(),
-                'messages' => $exc->getMessage()
-            ]);
-            echo '</pre>';
-            die();
         }
     }
 
@@ -241,14 +244,16 @@ class SearchController extends MyController
                 'title' => 'Keyword'
             );
         } catch (\Exception $exc) {
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r([
+                    'code' => $exc->getCode(),
+                    'messages' => $exc->getMessage()
+                ]);
+                echo '</pre>';
+                die();
+            }
             return $this->redirect()->toRoute('404', array());
-            echo '<pre>';
-            print_r([
-                'code' => $exc->getCode(),
-                'messages' => $exc->getMessage()
-            ]);
-            echo '</pre>';
-            die();
         }
     }
 

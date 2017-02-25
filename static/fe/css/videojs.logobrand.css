@@ -1,0 +1,17 @@
+img#vjs-logobrand-image {
+	position: absolute;
+	top: 10px;
+	right: 14px;
+	transition: visibility 0.1s ease 0s, opacity 0.1s ease 0s;
+	visibility: visible;
+	width: 121px;
+}
+.vjs-user-inactive img#vjs-logobrand-image {
+	visibility: hidden;
+}
+.vjs-user-inactive.vjs-paused img#vjs-logobrand-image {
+	visibility: visible;
+}
+.vjs-ad-playing a#vjs-logobrand-image-destination {
+	display: none;
+}

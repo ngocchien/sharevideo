@@ -1,70 +1,226 @@
-<div class="content">
-    <div id="adindexcenter" class="adbox" style="margin-bottom:20px">
-        <!-- khampha.tech -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-9166980393030854"
-             data-ad-slot="3530466045"
-             data-ad-format="auto"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-    <div class="listview">
-        <ul>
-            <?php
-            foreach ($this->arrContentList as $key => $arrContent):
+<div id="home-page">
+    <div class="top-post page-width">
+        <?php foreach ($this->arrContentNewList as $key => $arr_content):
+            $arr_image = json_decode($arr_content['cont_image'], true);
+            if ($key == 0):
                 ?>
-                <li class="listitem clearfix">
-                    <a class="title"
-                       href="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arrContent['cont_slug'], 'contentId' => $arrContent['cont_id']]) ?>">
-                        <?php echo $arrContent['cont_title']; ?>
-                        <?php echo in_array($arrContent['cate_id'], \My\General::$cate_videos) ? '<img src ="' . STATIC_URL . '/f/v1/images/video_icon-sm.png" title="videos"/>' : '' ?>
-                    </a>
-                    <a class="thumb"
-                       href="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arrContent['cont_slug'], 'contentId' => $arrContent['cont_id']]) ?>"
-                       rel="nofollow">
-                        <img src="<?php echo $arrContent['cont_main_image']; ?>"
-                             alt="<?php echo $arrContent['cont_title']; ?>"/>
-                    </a>
-                    <div
-                        class="desc"><?php echo $arrContent['cont_description'] ? $arrContent['cont_description'] : $arrContent['cont_title']; ?></div>
-                </li>
-                <?php if ($key == 2): ?>
-                <div id="adindexcenter" class="adbox" style="margin-bottom:20px">
-                    <!-- khampha -->
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-client="ca-pub-9166980393030854"
-                         data-ad-slot="3530466045"
-                         data-ad-format="auto"></ins>
-                    <script>
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
+                <div class="no1">
+                    <div class="post"
+                         style="background-image: url(<?php echo $arr_image['640x480'] ?>)">
+                        <img src="<?php echo STATIC_URL; ?>/images/bg-default-565x565.gif"
+                             alt="Default Background"
+                             class="bg-default"
+                        />
+                        <div class="bg-gradient"></div>
+                        <div class="content">
+                            <h1 class="title">
+                                <?php echo $arr_content['cont_title']; ?>
+                            </h1>
+                            <p class="view">
+                                <span class="number">
+                                    <?php echo number_format($arr_content['cont_views']) ?>
+                                </span> view
+                            </p>
+                        </div>
+                        <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                           title="<?php echo $arr_content['cont_title']; ?>"
+                           class="link">
+                        </a>
+                    </div>
                 </div>
-            <?php endif; ?>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-    <div class="pagination-container">
-        <ul class="pagination">
-            <?php if ($this->intPage > 1):
-                if ($this->intPage == 2):?>
-                    <li class="PagedList-skipToPrevious">
-                        <a href="<?php echo BASE_URL; ?>" rel="prev">Quay lại</a>
-                    </li>
-                <?php else: ?>
-                    <li class="PagedList-skipToPrevious">
-                        <a href="<?php echo BASE_URL; ?>/?page=<?php echo $this->intPage - 1; ?>" rel="prev">Quay
-                            lại</a>
-                    </li>
+            <?php else:
+                if ($key == 1): ?>
+                    <div class="videos">
                 <?php endif; ?>
-            <?php endif; ?>
-            <?php if (!empty($this->arrContentList)): ?>
-                <li class="PagedList-skipToNext">
-                    <a href="<?php echo BASE_URL; ?>/?page=<?php echo $this->intPage + 1 ?>" rel="next">Xem thêm</a>
-                </li>
-            <?php endif; ?>
-        </ul>
+                <div class="top">
+                    <div class="post"
+                         style="background-image: url(<?php echo $arr_image['480x360'] ?>);">
+                        <img src="<?php echo STATIC_URL; ?>/images/bg-default-565x565.gif"
+                             alt="Default Background"
+                             class="bg-default"
+                        />
+                        <div class="bg-gradient"></div>
+                        <div class="content">
+                            <h2 class="title">
+                                <?php echo $arr_content['cont_title']; ?>
+                            </h2>
+                            <p class="view">
+                                <span class="number"><?php echo number_format($arr_content['cont_views']) ?></span> view
+                            </p>
+                        </div>
+                        <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                           title="<?php echo $arr_content['cont_title']; ?>"
+                           class="link">
+                        </a>
+                    </div>
+                </div>
+                <?php if ($key == 4): ?>
+                </div>
+                <div class="navigation"></div>
+                <?php
+                break;
+            endif;
+            endif;
+        endforeach;
+        ?>
+    </div>
+    <div class="main-content">
+        <div class="container page-width">
+            <div class="categories">
+                <?php foreach ($this->arrContentByCategory as $cate_id => $arr_content_cate): ?>
+                    <div class="type">
+                        <h4 class="name">
+                            <a href="<?php echo $this->Url('category', ['cateSlug' => $this->arrCategoryList[$cate_id]['cate_slug'], 'cateId' => $this->arrCategoryList[$cate_id]['cate_id']]) ?>"><?php echo $this->arrCategoryList[$cate_id]['cate_name']; ?></a>
+                            <span></span>
+                        </h4>
+                        <div class="videos">
+                            <?php foreach ($arr_content_cate as $arr_content):
+                                $arr_img = json_decode($arr_content['cont_image'], true);
+                                ?>
+                                <div class="container">
+                                    <div class="post">
+                                        <div class="poster"
+                                             style="background-image: url(<?php echo $arr_img['480x360'] ?>);">
+                                            <img src="<?php echo STATIC_URL; ?>/images/bg-default-238x151.gif"
+                                                 alt="Default Background"
+                                                 class="bg-default"
+                                            />
+                                            <div class="bg-gradient"></div>
+                                            <p class="duration"><?php echo \My\General::formatDurationLength($arr_content['cont_duration']) ?></p>
+                                            <p class="view">
+                                                <span class="number">
+                                                    <?php echo number_format($arr_content['cont_views']) ?>
+                                                </span>
+                                                view
+                                            </p>
+                                            <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                               title="<?php echo $arr_content['cont_title'] ?>"
+                                               class="link">
+                                            </a>
+                                        </div>
+                                        <div class="content">
+                                            <h3 class="title">
+                                                <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                                   title="<?php echo $arr_content['cont_title'] ?>">
+                                                    <?php echo $arr_content['cont_title'] ?>
+                                                </a>
+                                            </h3>
+                                            <!--                                            <p class="author">-->
+                                            <!--                                                Đăng bởi-->
+                                            <!--                                                <a href="user/832.html" title="Long Cao" class="username">-->
+                                            <!--                                                    Long Cao </a>-->
+                                            <!--                                            </p>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="sidebar">
+                <div class="type hot">
+                    <h4 class="name">
+                        <img src="<?php echo STATIC_URL; ?>/images/general/icon-hot-42x57.png"
+                             alt="icon"/>
+                        <a href="javascript:;">HOT NOW</a>
+                        <span></span>
+                    </h4>
+                    <div class="container">
+                        <div class="bg-type">
+                            <img src="<?php echo STATIC_URL; ?>/images/homepage/bg-hot-700x226.jpg"
+                                 alt="Default Background"/>
+                        </div>
+                        <div class="videos">
+                            <?php foreach ($this->arrHotContentList as $key => $arr_content):
+                                $arr_img = json_decode($arr_content['cont_image'], true);
+                                ?>
+                                <div class="post">
+                                    <div class="poster"
+                                         style="background-image: url(<?php echo $arr_img['320x180'] ?>);">
+                                        <div class="bg-gradient"></div>
+                                        <p class="number top1"><?php echo $key + 1; ?></p>
+                                        <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]); ?>"
+                                           title="<?php echo $arr_content['cont_title']; ?>"
+                                           class="link">
+                                        </a>
+                                    </div>
+                                    <div class="content">
+                                        <h3 class="title">
+                                            <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                               title="<?php echo $arr_content['cont_title']; ?>">
+                                                <?php echo $arr_content['cont_title']; ?>
+                                            </a>
+                                        </h3>
+                                        <p class="view">
+                                            <span class="number">
+                                                <?php echo number_format($arr_content['cont_views']); ?>
+                                            </span>
+                                            view
+                                        </p>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sub-content">
+        <div class="content page-width">
+            <div class="more-videos">
+                <h4 class="name">
+                    View <span class="thin">more</span>
+                    <span class="tvd"><?php echo \My\General::SITE_DOMAIN; ?></span>
+                </h4>
+                <div class="videos">
+                    <?php foreach ($this->arrContentNewList as $key => $arr_content):
+                        if ($key < 5) {
+                            continue;
+                        }
+                        $arr_img = json_decode($arr_content['cont_image'], true);
+                        ?>
+                        <div class="post">
+                            <div class="poster"
+                                 style="background-image: url(<?php echo $arr_img['320x180'] ?>);">
+                                <div class="bg-gradient"></div>
+                                <p class="duration"><?php echo \My\General::formatDurationLength($arr_content['cont_duration']) ?></p>
+                                <p class="view">
+                                    <span class="number">
+                                        <?php echo $arr_content['cont_views']; ?>
+                                    </span>
+                                    view
+                                </p>
+                                <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                   title="<?php echo $arr_content['cont_title'] ?>"
+                                   class="link">
+                                </a>
+                            </div>
+                            <div class="content">
+                                <h3 class="title">
+                                    <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
+                                       title="<?php echo $arr_content['cont_title'] ?>">
+                                        <?php echo $arr_content['cont_title']; ?>
+                                    </a>
+                                </h3>
+                                <p class="description"><?php echo $arr_content['cont_description']; ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        <div class="view-more">
+            <a href="javascript:;" class="btn-view" data-page=1>More</a>
+        </div>
+        <div id="loading-container">
+            <div class="loading">
+                <div class="bullet"></div>
+                <div class="bullet"></div>
+                <div class="bullet"></div>
+                <div class="bullet"></div>
+            </div>
+        </div>
     </div>
 </div>

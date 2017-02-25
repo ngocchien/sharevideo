@@ -11,14 +11,17 @@ use Elastica\Query\QueryString,
     My\Search\SearchAbstract,
     My\General;
 
-class Tag extends SearchAbstract {
+class Tag extends SearchAbstract
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->setSearchIndex(SEARCH_PREFIX . 'tag');
         $this->setSearchType('tagList');
     }
 
-    public function createIndex() {
+    public function createIndex()
+    {
         $strIndexName = SEARCH_PREFIX . 'tag';
 
         $searchClient = General::getSearchConfig();
@@ -59,7 +62,7 @@ class Tag extends SearchAbstract {
                     'max_gram' => 30,
                 ]
             ],
-                ], true);
+        ], true);
 
         //set search type
         $searchType = $searchIndex->getType('tagList');
@@ -72,12 +75,14 @@ class Tag extends SearchAbstract {
             'created_date' => ['type' => 'long', 'index' => 'not_analyzed'],
             'user_created' => ['type' => 'integer', 'index' => 'not_analyzed'],
             'updated_date' => ['type' => 'long', 'index' => 'not_analyzed'],
-            'user_updated' => ['type' => 'integer', 'index' => 'not_analyzed']
+            'user_updated' => ['type' => 'integer', 'index' => 'not_analyzed'],
+            'tag_status' => ['type' => 'integer', 'index' => 'not_analyzed']
         ]);
         $mapping->send();
     }
 
-    public function add($arrDocument) {
+    public function add($arrDocument)
+    {
         try {
             if (empty($arrDocument) && !$arrDocument instanceof \Elastica\Document) {
                 throw new \Exception('Document cannot be blank or must be instance of \Elastica\Document class');
@@ -94,7 +99,8 @@ class Tag extends SearchAbstract {
         }
     }
 
-    public function edit($document) {
+    public function edit($document)
+    {
         $respond = $this->getSearchType()->updateDocument($document);
         $this->getSearchType()->getIndex()->refresh();
         if ($respond->isOk()) {
@@ -103,7 +109,8 @@ class Tag extends SearchAbstract {
         return false;
     }
 
-    public function getDetail($params, $arrFields = []) {
+    public function getDetail($params, $arrFields = [])
+    {
         $boolQuery = new Bool();
         $boolQuery = $this->__buildWhere($params, $boolQuery);
         $query = new ESQuery();
@@ -113,8 +120,8 @@ class Tag extends SearchAbstract {
         }
         $instanceSearch = new Search(General::getSearchConfig());
         $resultSet = $instanceSearch->addIndex($this->getSearchIndex())
-                ->addType($this->getSearchType())
-                ->search($query);
+            ->addType($this->getSearchType())
+            ->search($query);
         $this->setResultSet($resultSet);
         $detailAreaPrice = current($this->toArray());
         return $detailAreaPrice;
@@ -123,20 +130,21 @@ class Tag extends SearchAbstract {
     /**
      * Get List Limit
      */
-    public function getListLimit($params = array(), $intPage = 1, $intLimit = 15, $sort = ['created_date' => ['order' => 'desc']]) {
+    public function getListLimit($params = array(), $intPage = 1, $intLimit = 15, $sort = ['created_date' => ['order' => 'desc']])
+    {
         try {
             $intFrom = $intLimit * ($intPage - 1);
             $boolQuery = new Bool();
             $boolQuery = $this->__buildWhere($params, $boolQuery);
             $query = new ESQuery();
             $query->setFrom($intFrom)
-                    ->setSize($intLimit)
-                    ->setSort($sort);
+                ->setSize($intLimit)
+                ->setSort($sort);
             $query->setQuery($boolQuery);
             $instanceSearch = new Search(General::getSearchConfig());
             $resultSet = $instanceSearch->addIndex($this->getSearchIndex())
-                    ->addType($this->getSearchType())
-                    ->search($query);
+                ->addType($this->getSearchType())
+                ->search($query);
             $this->setResultSet($resultSet);
             return $this->toArray();
         } catch (\Exception $exc) {
@@ -148,7 +156,8 @@ class Tag extends SearchAbstract {
     /**
      * Get List
      */
-    public function getList($params, $sort = [], $arrFields = []) {
+    public function getList($params, $sort = [], $arrFields = [])
+    {
         $boolQuery = new Bool();
         $boolQuery = $this->__buildWhere($params, $boolQuery);
         $query = new ESQuery();
@@ -160,7 +169,7 @@ class Tag extends SearchAbstract {
         }
 
         $query->setSize($total)
-                ->setSort($sort);
+            ->setSort($sort);
         $query->setQuery($boolQuery);
         if ($arrFields && is_array($arrFields)) {
             $query->setSource($arrFields);
@@ -168,8 +177,8 @@ class Tag extends SearchAbstract {
 
         $instanceSearch = new Search(General::getSearchConfig());
         $resultSet = $instanceSearch->addIndex($this->getSearchIndex())
-                ->addType($this->getSearchType())
-                ->search($query);
+            ->addType($this->getSearchType())
+            ->search($query);
         $this->setResultSet($resultSet);
         return $this->toArray();
     }
@@ -179,7 +188,8 @@ class Tag extends SearchAbstract {
      * @param array $arrConditions
      * @return integer
      */
-    public function getTotal($arrConditions = array()) {
+    public function getTotal($arrConditions = array())
+    {
         $boolQuery = new Bool();
         $boolQuery = $this->__buildWhere($arrConditions, $boolQuery);
 
@@ -187,17 +197,19 @@ class Tag extends SearchAbstract {
         $query->setQuery($boolQuery);
         $instanceSearch = new Search(General::getSearchConfig());
         $resultSet = $instanceSearch->addIndex($this->getSearchIndex())
-                ->addType($this->getSearchType())
-                ->count($query);
+            ->addType($this->getSearchType())
+            ->count($query);
         return $resultSet;
     }
 
-    private function setSort($params) {
+    private function setSort($params)
+    {
         //copy
-        return ['cont_id' => ['order' => 'desc']];
+        return ['tag_id' => ['order' => 'desc']];
     }
 
-    public function removeAllDoc() {
+    public function removeAllDoc()
+    {
         $respond = $this->getSearchType()->deleteByQuery('_type:tagList');
         $this->getSearchType()->getIndex()->refresh();
         if ($respond->isOk()) {
@@ -206,48 +218,28 @@ class Tag extends SearchAbstract {
         return false;
     }
 
-    public function setHighLight(\Elastica\Query $query) {
-        if (!$this->isHighlight()) {
-            return $query;
-        }
-
-        $arrParams = $this->getParams();
-        if ($arrParams['senderName']) {
-            $query->setHighlight(array(
-                'pre_tags' => array('<b style="background-color: #beedf9;">'),
-                'post_tags' => array('</b>'),
-                'fields' => array(
-                    'sender_name' => array(
-                        'fragment_size' => 200,
-                        'number_of_fragments' => 1,
-                    ),
-                ),
-            ));
-        }
-        return $query;
-    }
-
-    public function __buildWhere($params, $boolQuery) {
+    public function __buildWhere($params, $boolQuery)
+    {
 
         if (empty($params)) {
             return $boolQuery;
         }
 
-        if (!empty($params['cont_id'])) {
+        if (!empty($params['tag_id'])) {
             $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('cont_id', $params['cont_id']);
+            $addQuery->setTerm('tag_id', $params['tag_id']);
             $boolQuery->addMust($addQuery);
         }
 
-        if (!empty($params['in_cont_id'])) {
+        if (!empty($params['in_tag_id'])) {
             $addQuery = new ESQuery\Terms();
-            $addQuery->setTerms('cont_id', $params['in_cont_id']);
+            $addQuery->setTerms('tag_id', $params['in_tag_id']);
             $boolQuery->addMust($addQuery);
         }
 
-        if (!empty($params['not_cont_id'])) {
+        if (!empty($params['not_tag_id'])) {
             $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('cont_id', $params['not_cont_id']);
+            $addQuery->setTerm('tag_id', $params['not_tag_id']);
             $boolQuery->addMustNot($addQuery);
         }
 
@@ -257,143 +249,33 @@ class Tag extends SearchAbstract {
             $boolQuery->addMust($addQuery);
         }
 
-        if (!empty($params['cont_status'])) {
+        if (!empty($params['tag_status'])) {
             $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('cont_status', $params['cont_status']);
+            $addQuery->setTerm('tag_status', $params['tag_status']);
             $boolQuery->addMust($addQuery);
         }
 
-        if (!empty($params['not_cont_status'])) {
+        if (!empty($params['not_tag_status'])) {
             $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('cont_status', $params['not_cont_status']);
+            $addQuery->setTerm('tag_status', $params['not_tag_status']);
             $boolQuery->addMustNot($addQuery);
         }
 
-        if (!empty($params['ip_address'])) {
+        if (!empty($params['tag_slug'])) {
             $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('ip_address', $params['ip_address']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['cate_id'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('cate_id', $params['cate_id']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['in_cate_id'])) {
-            $addQuery = new ESQuery\Terms();
-            $addQuery->setTerms('cate_id', $params['in_cate_id']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['cont_slug'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('cont_slug', $params['cont_slug']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['created_date_today'])) {
-            $date = date('d-m-Y', time());
-            $firstSecond = strtotime($date);
-            $lastSecond = ($firstSecond - 1) + (60 * 60 * 24);
-
-            $addQuery = new ESQuery\Range();
-            $addQuery->addField('created_date', array('lte' => $lastSecond, 'gte' => $firstSecond));
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['key_word'])) {
-            $bool = new Bool();
-            if ((int) $params['key_word'] > 0) {
-                $queryTerm = new ESQuery\Term();
-                $queryTerm->setTerm('cont_id', (int) $params['key_word']);
-                $bool->addShould($queryTerm);
-            }
-
-            $strKeyword = trim($params['key_word']);
-
-            $titleQueryString = new QueryString();
-            $titleQueryString->setDefaultField('cont_title')
-                    ->setQuery($strKeyword)
-                    ->setAllowLeadingWildcard(1)
-                    ->setDefaultOperator('AND');
-            $bool->addShould($titleQueryString);
-
-            $detailQueryString = new QueryString();
-            $detailQueryString->setDefaultField('cont_detail_text')
-                    ->setQuery($strKeyword)
-                    ->setAllowLeadingWildcard(1)
-                    ->setDefaultOperator('AND');
-            $bool->addShould($detailQueryString);
-
-            $boolQuery->addMust($bool);
-        }
-
-        if (!empty($params['dist_id'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('dist_id', $params['dist_id']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['prop_id'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('prop_id', $params['prop_id']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['is_vip'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('is_vip', $params['is_vip']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['vip_type'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('vip_type', $params['vip_type']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['not_type_vip'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('vip_type', $params['not_type_vip']);
-            $boolQuery->addMustNot($addQuery);
-        }
-
-
-        if (!empty($params['more_expired_time'])) {
-            $addQuery = new ESQuery\Range();
-            $addQuery->addField('expired_time', array('gte' => $params['more_expired_time']));
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (!empty($params['less_expired_time'])) {
-            $addQuery = new ESQuery\Range();
-            $addQuery->addField('expired_time', array('lte' => $params['less_expired_time']));
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (isset($params['is_send'])) {
-            $addQuery = new ESQuery\Term();
-            $addQuery->setTerm('is_send', $params['is_send']);
-            $boolQuery->addMust($addQuery);
-        }
-
-        if (isset($params['less_cont_id'])) {
-            $addQuery = new ESQuery\Range();
-            $addQuery->addField('cont_id', array('lt' => $params['less_cont_id']));
+            $addQuery->setTerm('tag_slug', $params['tag_slug']);
             $boolQuery->addMust($addQuery);
         }
 
         if (isset($params['full_text_title'])) {
             $math = new ESQuery\Match();
-            $math->setParam('cont_title', trim($params['full_text_title']));
+            $math->setParam('tag_name', trim($params['full_text_title']));
             $boolQuery->addMust($math);
         }
-        
-        if (isset($params['more_created_date'])) {
-            $addQuery = new ESQuery\Range();
-            $addQuery->addField('created_date', array('gte' => $params['more_created_date']));
+
+        if (!empty($params['in_tag_slug'])) {
+            $addQuery = new ESQuery\Terms();
+            $addQuery->setTerms('tag_slug', $params['in_tag_slug']);
             $boolQuery->addMust($addQuery);
         }
 

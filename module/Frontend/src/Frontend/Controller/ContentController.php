@@ -15,15 +15,7 @@ class ContentController extends MyController
 
     public function __construct()
     {
-        $this->externalJS = [
-            STATIC_URL . '/f/v1/scripts/photoswipe/photoswipe.min.js',
-            STATIC_URL . '/f/v1/scripts/photoswipe/photoswipe-ui-default.min.js',
-            STATIC_URL . '/f/v1/scripts/jquery.photoswipe.min.js',
-        ];
-        $this->externalCSS = [
-            STATIC_URL . '/f/v1/scripts/photoswipe/photoswipe.min.css',
-            STATIC_URL . '/f/v1/scripts/photoswipe/default-skin/default-skin.min.css'
-        ];
+
     }
 
     public function detailAction()
@@ -66,10 +58,9 @@ class ContentController extends MyController
              * Category
              */
             $arrCategoryDetail = unserialize(ARR_CATEGORY)[$arrContent['cate_id']];
-            $arrCategoryParent = [];
-            if (!empty($arrCategoryDetail['parent_id'])) {
-                $arrCategoryParent = unserialize(ARR_CATEGORY)[$arrCategoryDetail['parent_id']];
-            }
+
+            //image
+            $cont_detail_image = json_decode($arrContent['cont_image'], true);
 
             $this->renderer = $this->serviceLocator->get('Zend\View\Renderer\PhpRenderer');
             $this->renderer->headTitle(html_entity_decode($metaTitle) . General::TITLE_META);
@@ -80,8 +71,10 @@ class ContentController extends MyController
             $this->renderer->headMeta()->appendName('keywords', html_entity_decode($metaKeyword));
             $this->renderer->headMeta()->appendName('description', html_entity_decode($metaDescription));
             $this->renderer->headMeta()->setProperty('og:description', html_entity_decode($metaDescription));
-            $this->renderer->headMeta()->appendName('image', $arrContent['cont_main_image']);
-            $this->renderer->headMeta()->setProperty('og:image', $arrContent['cont_main_image']);
+            $this->renderer->headMeta()->appendName('image', $cont_detail_image['640x480']);
+            $this->renderer->headMeta()->setProperty('og:image', $cont_detail_image['640x480']);
+            $this->renderer->headMeta()->setProperty('og:image:width', '640');
+            $this->renderer->headMeta()->setProperty('og:image:height', '480');
 
             $this->renderer->headLink(array('rel' => 'image_src', 'href' => $arrContent['cont_main_image']));
             $this->renderer->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('view-content', ['contentSlug' => $arrContent['cont_slug'], 'contentId' => $cont_id])));
@@ -95,7 +88,7 @@ class ContentController extends MyController
                     'less_cont_id' => $arrContent['cont_id']
                 ],
                 1,
-                6,
+                10,
                 ['cont_id' => ['order' => 'desc']],
                 [
                     'cont_title',
@@ -103,7 +96,9 @@ class ContentController extends MyController
                     'cont_main_image',
                     'cont_description',
                     'cont_id',
-                    'cate_id'
+                    'cate_id',
+                    'cont_image',
+                    'from_source'
                 ]
             );
 
@@ -124,7 +119,8 @@ class ContentController extends MyController
                     'cont_description',
                     'cont_id',
                     'cate_id',
-                    'cont_views'
+                    'cont_views',
+                    'cont_image'
                 ]
             );
 
@@ -162,10 +158,25 @@ class ContentController extends MyController
                 ]
             );
 
-            unset($serviceContent);
-            unset($instanceSearchContent);
-            unset($instanceSearchKeyword);
-            unset($arrConditionContent);
+            //LẤY LIST TAG
+            $arrTagList = [];
+            if (!empty($arrContent['tag_id'])) {
+                $instanceSearchTag = new \My\Search\Tag();
+                $arrTagList = $instanceSearchTag->getList(
+                    [
+                        'in_tag_id' => explode(',', $arrContent['tag_id']),
+                        'tag_status' => 1
+                    ],
+                    [],
+                    [
+                        'tag_id',
+                        'tag_name',
+                        'tag_slug'
+                    ]
+                );
+            }
+
+            unset($serviceContent, $instanceSearchTag, $instanceSearchContent, $instanceSearchKeyword, $arrConditionContent);
             return array(
                 'params' => $params,
                 'arrContent' => $arrContent,
@@ -174,19 +185,22 @@ class ContentController extends MyController
                 'arrContentLastedList' => $arrContentLastedList,
                 'arrContentNews' => $arrContentNews,
                 'arrKeywordList' => $arrKeywordList,
-                'arrCategoryParent' => $arrCategoryParent,
                 'metaTitle' => $metaTitle,
-                'metaDescription' => $metaDescription
+                'metaDescription' => $metaDescription,
+                'arrTagList' => $arrTagList,
+                'cont_detail_image' => $cont_detail_image
             );
         } catch (\Exception $exc) {
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r([
+                    'code' => $exc->getCode(),
+                    'messages' => $exc->getMessage()
+                ]);
+                echo '</pre>';
+                die();
+            }
             return $this->redirect()->toRoute('404', array());
-            echo '<pre>';
-            print_r([
-                'code' => $exc->getCode(),
-                'messages' => $exc->getMessage()
-            ]);
-            echo '</pre>';
-            die();
         }
     }
 

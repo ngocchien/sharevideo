@@ -1,5 +1,4 @@
 <?php
-
 if (APPLICATION_ENV === 'dev') {
     $display_not_found_reason = true;
     $display_exceptions = true;
@@ -152,7 +151,7 @@ return array(
             'view-content' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/content[[/:contentSlug]-[:contentId].html]',
+                    'route' => '/post[[/:contentSlug]-[:contentId].html]',
                     'constraints' => array(
                         'module' => 'frontend',
                         'controller' => 'content',
@@ -261,6 +260,28 @@ return array(
                     ),
                 ),
             ),
+            'tag' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/tag/[[:tagSlug]-[:tagId]][/page[/:page]][.html]',
+                    'constraints' => array(
+                        'controller' => 'tag',
+                        'action' => 'index',
+                        'tagSlug' => '[a-zA-Z0-9_-]*',
+                        'tagId' => '[0-9]+',
+                        'page' => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Frontend\Controller',
+                        'module' => 'frontend',
+                        'controller' => 'tag',
+                        'action' => 'index',
+                        'tagSlug' => '',
+                        'tagId' => 0,
+                        'page' => 1
+                    ),
+                ),
+            ),
             'sitemap' => array(
                 'type' => 'Segment',
                 'options' => array(
@@ -282,7 +303,7 @@ return array(
         ),
     ),
     'module_layouts' => array(
-        'Frontend' => 'layout/layout'
+        'Frontend' => 'frontend/layout'
     ),
     'view_helpers' => array(
         'invokables' => array(
@@ -295,28 +316,16 @@ return array(
         'display_exceptions' => $display_exceptions,
         'doctype' => 'HTML5',
         'template_map' => array(
-            'layout/layout' => __DIR__ . '/../view/',
-            'frontend/header' => __DIR__ . '/../view/',
-            'frontend/layder-slider' => __DIR__ . '/../view/',
-            'frontend/search' => __DIR__ . '/../view/',
-            'frontend/premium' => __DIR__ . '/../view/',
-            'frontend/category' => __DIR__ . '/../view/',
-            'frontend/classify' => __DIR__ . '/../view/',
-            'frontend/footer' => __DIR__ . '/../view/',
-            'frontend/template_email' => __DIR__ . '/../view/',
-            'frontend/content/upload' => __DIR__ . '/../view/',
-            'frontend/auth/reset-password' => __DIR__ . '/../view/',
-            'frontend/nav-user-left' => __DIR__ . '/../view/',
-            'frontend/nav-right' => __DIR__ . '/../view/',
-            'frontend/nav-left' => __DIR__ . '/../view/',
-            'frontend/content/add-comment' => __DIR__ . '/../view/',
-            'frontend/email-messages' => __DIR__ . '/../view/',
-            'frontend/footer-email' => __DIR__ . '/../view/',
-            'frontend/user/get-messages' => __DIR__ . '/../view/',
-            'frontend/email-replay-messages' => __DIR__ . '/../view/'
+            'frontend/layout' => __DIR__ . '/../view/layout/layout.phtml',
+            'frontend/header' => __DIR__ . '/../view/layout/header.phtml',
+            'frontend/search-form' => __DIR__ . '/../view/layout/search-form.phtml',
+            'frontend/side-menu' => __DIR__ . '/../view/layout/side-menu.phtml',
+            'frontend/footer' => __DIR__ . '/../view/layout/footer.phtml',
+            'frontend/nav-right' => __DIR__ . '/../view/layout/nav-right.phtml',
+            'frontend/content-load-more' => __DIR__ . '/../view/layout/content-load-more.phtml',
         ),
         'template_path_stack' => array(
-            __DIR__ . '/../view/',
+            'frontend' => __DIR__ . '/../view'
         ),
         'json_exceptions' => $errorHandler,
     ),

@@ -87,7 +87,9 @@ class Content extends SearchAbstract
             'cont_image' => ['type' => 'string', 'store' => 'yes', 'analyzer' => 'translation_index_analyzer', 'search_analyzer' => 'translation_search_analyzer', 'term_vector' => 'with_positions_offsets'],
             'method' => ['type' => 'string', 'index' => 'not_analyzed'],
             'from_source' => ['type' => 'string', 'index' => 'not_analyzed'],
-            'cont_main_image' => ['type' => 'string', 'index' => 'not_analyzed']
+            'cont_main_image' => ['type' => 'string', 'index' => 'not_analyzed'],
+            'cont_duration' => ['type' => 'string', 'index' => 'not_analyzed'],
+            'tag_id' => ['type' => 'string', 'store' => 'yes', 'index' => 'analyzed']
         ]);
         $mapping->send();
     }
@@ -406,6 +408,13 @@ class Content extends SearchAbstract
         if (isset($params['more_created_date'])) {
             $addQuery = new ESQuery\Range();
             $addQuery->addField('created_date', array('gte' => $params['more_created_date']));
+            $boolQuery->addMust($addQuery);
+        }
+
+        if (isset($params['search_tag_id'])) {
+            $addQuery = new ESQuery\Wildcard();
+            $addQuery->setParam('tag_id', $params['search_tag_id']);
+//            $addQuery->addField('created_date', array('gte' => $params['more_created_date']));
             $boolQuery->addMust($addQuery);
         }
 

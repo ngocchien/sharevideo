@@ -58,7 +58,7 @@ class GeneralController extends MyController {
 //        $this->renderer->headMeta()->setProperty('fb:pages', '272925143041233');
 
         $this->renderer->headMeta()->setProperty('itemprop:name', html_entity_decode($arr_general['gene_title']));
-        $this->renderer->headMeta()->setProperty('itemprop:description', html_entity_decode($arrContent['gene_title']));
+        $this->renderer->headMeta()->setProperty('itemprop:description', html_entity_decode($arr_general['gene_title']));
         $this->renderer->headMeta()->setProperty('itemprop:image', $metaImage);
 
         $this->renderer->headMeta()->setProperty('twitter:card', 'summary');

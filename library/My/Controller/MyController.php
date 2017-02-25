@@ -54,36 +54,57 @@ class MyController extends AbstractActionController
 
     private function setMeta($arrData)
     {
-        switch ($this->resource) {
-            case 'frontend:index:index':
-                $this->renderer->headTitle(\My\General::SITE_DOMAIN . ' - ' . General::SITE_SLOGAN);
-                $this->renderer->headMeta()->setProperty('url', \My\General::SITE_DOMAIN_FULL);
-                $this->renderer->headMeta()->setProperty('og:url', General::SITE_DOMAIN_FULL);
-                $this->renderer->headMeta()->appendName('title', html_entity_decode(\My\General::SITE_DOMAIN . ' -' . General::SITE_SLOGAN));
-                $this->renderer->headMeta()->setProperty('og:title', html_entity_decode(\My\General::SITE_DOMAIN . ' -' . General::SITE_SLOGAN));
-                $this->renderer->headMeta()->setProperty('og:description', html_entity_decode(General::DESCRIPTION_DEFAULT));
-                $this->renderer->headMeta()->appendName('keywords', General::KEYWORD_DEFAULT);
-                $this->renderer->headMeta()->appendName('description', General::DESCRIPTION_DEFAULT);
-                $this->renderer->headMeta()->appendName('image', General::SITE_IMAGES_DEFAULT);
-                $this->renderer->headMeta()->setProperty('og:image', General::SITE_IMAGES_DEFAULT);
-                break;
-            default:
-                break;
+        if ($arrData['module'] == 'frontend') {
+            //set all page
+            $this->renderer->headMeta()
+                ->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8')
+                ->appendHttpEquiv('content-language', 'en-US')
+                ->appendName('viewport', html_entity_decode('width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes'))
+                ->appendName('author', html_entity_decode(\My\General::SITE_AUTH))
+                ->appendName('robots', html_entity_decode('index, follow'))
+                ->appendName('theme-color', html_entity_decode('#007cdb'));
+            $this->renderer
+                ->headLink(array('rel' => 'shortcut ', 'href' => STATIC_URL . '/images/favicon.png'))
+                ->headLink(array('rel' => 'icon ', 'sizes' => '192x192', 'href' => STATIC_URL . '/images/favicon-192x192.png'));
+
+            //set 1 page
+            switch ($this->resource) {
+                case 'frontend:index:index':
+                    $this->renderer->headTitle(\My\General::SITE_DOMAIN . ' - ' . \My\General::SITE_SLOGAN);
+                    $this->renderer->headMeta()
+                        ->setProperty('url', \My\General::SITE_DOMAIN_FULL)
+                        ->setProperty('og:url', \My\General::SITE_DOMAIN_FULL)
+                        ->appendName('title', html_entity_decode(\My\General::SITE_DOMAIN . ' -' . General::SITE_SLOGAN))
+                        ->setProperty('og:title', html_entity_decode(\My\General::SITE_DOMAIN . ' -' . General::SITE_SLOGAN))
+                        ->setProperty('og:description', html_entity_decode(\My\General::DESCRIPTION_DEFAULT))
+                        ->appendName('keywords', \My\General::KEYWORD_DEFAULT)
+                        ->appendName('description', \My\General::DESCRIPTION_DEFAULT)
+                        ->appendName('image', \My\General::SITE_IMAGES_DEFAULT)
+                        ->setProperty('og:image', \My\General::SITE_IMAGES_DEFAULT);
+                    $this->renderer
+                        ->headLink(array('rel' => 'image_src', 'href' => \My\General::SITE_IMAGES_DEFAULT))
+                        ->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL))
+                        ->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL));
+                    break;
+                default:
+                    break;
+            }
         }
+
         if ($arrData['module'] === 'backend') {
-            $this->renderer->headTitle('Administrator - ' . General::SITE_AUTH);
+            $this->renderer->headTitle('Administrator - ' . \My\General::SITE_AUTH);
         }
     }
 
     private function permission($params)
     {
 
-        //check can access CPanel
+//check can access CPanel
         if (IS_ACP != 1) {
             return false;
         }
 
-        //check use in fullaccess role
+//check use in fullaccess role
         if (FULL_ACCESS) {
             return true;
         }
@@ -132,16 +153,17 @@ class MyController extends AbstractActionController
 
     private function authenticate($arrData)
     {
+        define('MODULE', $arrData['module']);
+        define('CONTROLLER', $arrData['controller']);
+        define('ACTION', $arrData['action']);
+
         $arrUserData = $this->getAuthService()->getIdentity();
         if ($arrData['module'] === 'backend') {
-
             if (empty($arrUserData)) {
                 return $this->redirect()->toRoute('backend', array('controller' => 'auth', 'action' => 'login'));
             }
 
             define('UID', (int)$arrUserData['user_id']);
-            define('MODULE', $arrData['module']);
-            define('CONTROLLER', $arrData['controller']);
             define('FULLNAME', $arrUserData['user_fullname']);
             define('USERNAME', $arrUserData['user_name']);
             define('EMAIL', $arrUserData['user_email']);
@@ -150,7 +172,7 @@ class MyController extends AbstractActionController
             define('PERMISSION', json_encode($arrUserData['permission']));
             define('FULL_ACCESS', empty($arrUserData['is_full_access']) ? 0 : 1);
         }
-        return;
+
         if ($arrData['module'] === 'frontend') {
             $instanceSearchCategory = new \My\Search\Category();
             $arrCategoryList = $instanceSearchCategory->getList(
@@ -168,7 +190,6 @@ class MyController extends AbstractActionController
                     'cate_img_url'
                 ],
                 ['cate_sort' => ['order' => 'asc'], 'cate_id' => ['order' => 'asc']]
-
             );
             $arrCategoryParentList = [];
             $arrCategoryByParent = [];

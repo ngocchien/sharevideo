@@ -14,7 +14,7 @@
 //if enviroment is develop. Enable trace for MySQL
 
 $dbParams = array(
-    'database' => 'sharevideo',
+    'database' => 'share_video',
     'username' => 'root',
     'password' => '123123',
     'hostname' => 'localhost',
@@ -57,24 +57,24 @@ if (APPLICATION_ENV === 'dev' && $isPhpCli === false) {
                 $adapter->injectProfilingStatementPrototype($options);
                 return $adapter;
             },
-                ),
-            );
-        } else {
-            $arrServiceManager = array(
-                'factories' => array(
-                    'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
-            ));
-        }
+        ),
+    );
+} else {
+    $arrServiceManager = array(
+        'factories' => array(
+            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+        ));
+}
 
-        return array(
-            'db' => array(
-                'driver' => 'PDO',
-                'dsn' => 'mysql:dbname=sharevideo;host=localhost',
-                'driver_options' => array(
-                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8',
-                ),
-            ),
-            'service_manager' => $arrServiceManager,
-            'di' => array(),
-        );
+return array(
+    'db' => array(
+        'driver' => 'PDO',
+        'dsn' => 'mysql:dbname=share_video;host=localhost',
+        'driver_options' => array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8',
+        ),
+    ),
+    'service_manager' => $arrServiceManager,
+    'di' => array(),
+);
         

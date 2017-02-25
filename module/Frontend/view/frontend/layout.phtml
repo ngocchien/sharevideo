@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- render title -->
+    <?php echo \My\Minifier\HtmlMin::minify($this->headTitle()); ?>
+    <!-- render Meta -->
+    <?php echo \My\Minifier\HtmlMin::minify($this->headMeta()); ?>
+    <!-- render headLink -->
+    <?php echo $this->headLink(); ?>
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '267543780301950',
+                xfbml      : true,
+                version    : 'v2.8'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+</head>
+<body>
+<div id="body-container">
+    <!-- render Header -->
+    <?php echo \My\Minifier\HtmlMin::minify($this->render('frontend/header')); ?>
+    <!-- render Search Form -->
+    <?php echo \My\Minifier\HtmlMin::minify($this->render('frontend/search-form')); ?>
+    <!-- render Side Menu -->
+    <?php echo \My\Minifier\HtmlMin::minify($this->render('frontend/side-menu')); ?>
+    <!-- render Main Content -->
+    <div id="page">
+        <!-- render content -->
+        <?php echo \My\Minifier\HtmlMin::minify($this->layout()->content); ?>
+    </div>
+    <!-- render Footer -->
+    <?php echo \My\Minifier\HtmlMin::minify($this->render('frontend/footer')); ?>
+</div>
+</body>
+<!-- render headScript -->
+<?php echo $this->headScript(); ?>
+</html>

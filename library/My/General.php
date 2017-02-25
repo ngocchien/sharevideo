@@ -5,14 +5,14 @@ namespace My;
 class General
 {
 
-    const SITE_DOMAIN_FULL = 'http://khampha.tech';
-    const TITLE_META = " - Khampha.tech";
-    const SITE_AUTH = "Khampha.tech";
-    const SITE_DOMAIN = 'Khampha.tech';
-    const SITE_SLOGAN = 'Khám phá công nghệ';
+    const SITE_DOMAIN_FULL = 'http://sharevideoclip.com';
+    const TITLE_META = " - Sharevideoclip.com";
+    const SITE_AUTH = "sharevideoclip.com";
+    const SITE_DOMAIN = 'sharevideoclip.com';
+    const SITE_SLOGAN = 'Share hot videos, funny videos, movie music';
     const SITE_HOTLINE = '(+84) 97 353 1618';
-    const KEYWORD_DEFAULT = 'Khampha.tech, khampha, kham pha khoa hoc, tin tuc khoa hoc, su kien khoa hoc, kham pha doi song, bi an, bi an khoa hoc, goc hai huoc, tin tuc khoa hoc nhanh nhat, tong hop tin tuc khoa hoc, cong nghe';
-    const DESCRIPTION_DEFAULT = 'Khampha.tech - Khám phá công nghệ, Cập nhật thông tin khoa học , công nghê, khám phá những bí ẩn của cuộc sống - khoa học, nghiên cứu những phát minh mới';
+    const KEYWORD_DEFAULT = 'Sharevideoclip.com, share videos clip, video clip, video hot, clip hot, general video clip, good clip, good video,funny video, funny clip, video music, video film, sport video, football video, gaming video';
+    const DESCRIPTION_DEFAULT = 'Sharevideoclip.com - Share hot videos, funny videos, movie music, top videos youtube, top social videos';
     const SITE_IMAGES_DEFAULT = 'http://static.khampha.tech/f/v1/images/home.png';
     const SITE_SOCIAL = 'https://www.facebook.com/khampha.tech/';
     const SITE_LOCATION = "";
@@ -26,9 +26,9 @@ class General
     const MR = 1;
     const MRS = 2;
     //define email admin 
-    const EMAIL_SUPPORT = 'khampha.tech@gmail.com';
-    const EMAIL_BCC = 'khampha.tech@gmail.com';
-    const EMAIL_SYS = 'khampha.tech@gmail.com';
+    const EMAIL_SUPPORT = 'ngocchien01@gmail.com';
+    const EMAIL_BCC = 'ngocchien01@gmail.com';
+    const EMAIL_SYS = 'ngocchien01@gmail.com';
     const EMAIL_SYS_PASSWORD = 'chien123';
     //define host mail
     const HOST_MAIL = 'smtp.gmail.com';
@@ -55,10 +55,10 @@ class General
     );
 
     static $config_fb = array(
-        'appId' => '654662148043081',
-        'secret' => '023f46f87634523c8dda5fbcbe4e3638',
+        'appId' => '267543780301950',
+        'secret' => 'de8f42407ac02e7efa747ea6148b3dda',
         'fb_id' => 158207711302448,
-        'access_token' => 'EAAJTaWjIMUkBAPzPyrhRFR85wEM6BRAxZCgaiwwkvuuZCRDTdoUvlusOj0a1KOZB4xJ6ZBMtig6F8TMQ8VWhXG6W8pGwZBUhyR6vB0Bp9P5wyIpnlfsF90XoXtXEqkHRlEZC8NdF2xEXHysoOZACEhAcv62Ei4nMxAZD'
+//        'access_token' => 'EAAJTaWjIMUkBAPzPyrhRFR85wEM6BRAxZCgaiwwkvuuZCRDTdoUvlusOj0a1KOZB4xJ6ZBMtig6F8TMQ8VWhXG6W8pGwZBUhyR6vB0Bp9P5wyIpnlfsF90XoXtXEqkHRlEZC8NdF2xEXHysoOZACEhAcv62Ei4nMxAZD'
     );
 
     static $face_traffic = [
@@ -68,10 +68,21 @@ class General
     ];
 
     static $google_config = [
-        'key' => 'AIzaSyAnYeFvlnYcIzBLorhkM5NVQNHpJP53neA',
-        'client_id' => '390243298500-8gqq0naegrpjh5g6rjqsoqirjukgppm6.apps.googleusercontent.com',
-        'client_secret' => 'I3BtfYGvIjFJnZVylWFz_EOA'
+        'key' => 'AIzaSyD6ENUAZfNMZNyiQZrSS9dI80XoGywPz6o',
+        'client_id' => '763767273741-aove72fd06bocnk4upkljd6unv38o5bm.apps.googleusercontent.com',
+        'client_secret' => 'mUVGFKCPsGBNh8tzVUvxT9mi'
     ];
+
+//    static $google_config = [
+//        'key' => 'AIzaSyDW0szgrecdX94Q5s1jAYhYE8LpdCFvjnc',
+//        'client_id' => '47246308384-09dceuo2a8usraklmtl6mgbfi0q5ljp8.apps.googleusercontent.com',
+//        'client_secret' => 'd3NNefkt3ETgbGXdap0hIKLv'
+//    ];
+//    static $google_config = [
+//        'key' => 'AIzaSyBlTq9Ah3zwzATAT0C76Fq7wVz0aE6wazM',
+//        'client_id' => '305277173466-i7u7cmv0a7gqco2rj86a9p99jbokp9lq.apps.googleusercontent.com',
+//        'client_secret' => 'yuNS6kJUsU69NX7rPXRIrU4C'
+//    ];
 
     static $cate_videos = [26, 27, 28, 29, 30, 31, 32, 33, 34];
 
@@ -679,6 +690,99 @@ class General
         list($day, $month, $year, $hour, $min, $second) = explode('/', $temp);
         $strReturn = 'Ngày ' . $day . ' tháng ' . $month . ' năm ' . $year . ' - ' . $hour . ' giờ ' . $min . ' phút ' . $second . ' giây';
         return $strReturn;
+    }
+
+    /**
+     * get_meta_tags UTF-8 content
+     * @static
+     * @param $url
+     * @return string
+     */
+    public static function writeLog($fileName = '', $arrParam = array())
+    {
+        date_default_timezone_set('Asia/Saigon');
+
+        $log = new \My\Logging();
+
+        $log->lfile(LOG_FOLDER . '/Share_Log_' . $fileName);
+
+        $arrParam['Time'] = date('H:i:s');
+
+        $log->lwrite(json_encode($arrParam), 'Data', true);
+
+        $log->lclose();
+
+    }
+
+    public static function crawlerImage($url, $name, $size, $controller = 'content')
+    {
+        if (!$url || !$name || !$size) {
+            return false;
+        }
+        $extension = end(explode('.', end(explode('/', $url))));
+        $name = self::getSlug($name) . '.' . $extension;
+
+        $strFolderType = UPLOAD_PATH . $controller;
+
+        //create folder
+        if (!is_dir($strFolderType)) {
+            mkdir($strFolderType, 0777, true);
+        }
+
+        //set permission
+        if (!is_writable($strFolderType) || !is_readable($strFolderType)) {
+            chmod($strFolderType, 0777);
+        }
+
+        $strTime = date('Y') . '/' . date('m') . '/' . date('d') . '/';
+        $strFolderByDate = $strFolderType . '/' . $strTime;
+
+        if (!is_dir($strFolderByDate)) {
+            mkdir($strFolderByDate, 0777, true);
+            chmod($strFolderByDate, 0777);
+        }
+
+        $folderPath = $strFolderByDate . $size . '/';
+
+        if (!is_dir($folderPath)) {
+            mkdir($folderPath, 0777, true);
+            chmod($folderPath, 0777);
+        }
+
+        file_put_contents($folderPath . $name, General::crawler($url));
+
+        if (!file_exists($folderPath . $name)) {
+            return false;
+        }
+
+        return UPLOAD_URL . '/' . $controller . '/' . $strTime . $size . '/' . $name;
+    }
+
+    public static function formatDurationLength($date)
+    {
+        return '10:00';
+        $current = time() - $date;
+
+        if ($current < 60) {
+            return $current . " giây trước";
+        } else {
+            $minute = round($current / 60);
+            if ($minute < 60) {
+                return $minute . " phút trước";
+            } else {
+                $house = round($minute / 60);
+                if ($house < 24) {
+                    return $house . " giờ trước";
+                } else {
+                    $day = round($house / 24);
+                    if ($day < 8) {
+                        return $day . " Ngày trước";
+                    } else {
+                        return date("d/m/Y", $date);
+                    }
+                }
+            }
+        }
     }
 
 }
