@@ -11,7 +11,7 @@ class ConsoleController extends MyController
 {
 
     protected static $_arr_worker = [
-        'content', 'logs', 'category', 'user', 'general', 'keyword', 'group', 'permission', 'crawler', 'tag'
+        'content', 'logs', 'category', 'user', 'general', 'keyword', 'group', 'permission', 'crawler', 'tag', 'admin-process'
     ];
 
     public function __construct()
@@ -802,6 +802,22 @@ class ConsoleController extends MyController
 
                 break;
 
+            case WORKER_PREFIX . '-admin-process':
+                //start job group in background
+                if ($params['background'] === 'true') {
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-admin-process >/dev/null & echo 2>&1 & echo $!");
+                    if (empty($PID)) {
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-admin-process in background. \n", 'light_cyan', 'red');
+                        return;
+                    }
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "-admin-process is running in background ... \n", 'green');
+                }
+
+                $funcName1 = SEARCH_PREFIX . 'updateDataDB';
+                $methodHandler1 = '\My\Job\JobAdminProcess::updateDataDB';
+                $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
+                break;
+
             case WORKER_PREFIX . '-crawler':
                 //start job group in background
                 if ($params['background'] === 'true') {
@@ -1293,11 +1309,89 @@ class ConsoleController extends MyController
         die('done');
     }
 
+    public function hotTrendVideoAction()
+    {
+        $current_date = date('Y-m-d');
+        $instanceSearchKeyWord = new \My\Search\Keyword();
+        for ($i = 0; $i <= 2; $i++) {
+            $date = strtotime('-' . $i . ' days', strtotime($current_date));
+            $date = date('Ymd', $date);
+            echo \My\General::getColoredString("Date = {$date}", 'cyan');
+//            $href = 'https://www.google.com/trends/hottrends/hotItems?ajax=1&pn=p28&htd=' . $date . '&htv=l';
+            $href = 'https://trends.google.com/trends/hotvideos/hotItems?hvd=&geo=US&mob=0&=htd' . $date . '&hvsm=l';
+//            https://trends.google.com/trends/hotvideos/hotItems
+//            hvd:
+//            geo:US || GB
+//            mob:0
+//            hvsm:1
+
+            $responseCurl = General::crawler($href);
+            $arrData = json_decode($responseCurl, true);
+
+            foreach ($arrData['trendsByDateList'] as $data) {
+                foreach ($data['trendsList'] as $data1) {
+                    $arr_key[] = $data1['title'];
+                    if (!empty($data1['relatedSearchesList'])) {
+                        foreach ($data1['relatedSearchesList'] as $arr_temp) {
+                            if (!empty($arr_temp['query'])) {
+                                array_push($arr_key, $arr_temp['query']);
+                            }
+                        }
+                    }
+
+                    foreach ($arr_key as $val) {
+                        $is_exits = $instanceSearchKeyWord->getDetail(['key_slug' => trim(General::getSlug($val))]);
+
+                        if ($is_exits) {
+                            echo \My\General::getColoredString("exist {$val}", 'red') . '<br/>';
+                            continue;
+                        }
+
+                        $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=212&espv=2&q=' . rawurlencode($val) . '&oq=' . rawurlencode($val);
+
+                        $gg_rp = General::crawler($url_gg);
+                        $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
+                        $key_description = '';
+                        foreach ($gg_rp_dom->find('.srg .st') as $item) {
+                            empty($key_description) ?
+                                $key_description .= '<p><strong>' . strip_tags($item->outertext) . '</strong></p>' :
+                                $key_description .= '<p>' . strip_tags($item->outertext) . '</p>';
+                        }
+
+                        $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
+                        $id_key = $serviceKeyword->add([
+                            'key_name' => $val,
+                            'key_slug' => General::getSlug($val),
+                            'is_crawler' => 0,
+                            'created_date' => time(),
+                            'key_description' => $key_description
+                        ]);
+                        if ($id_key) {
+                            echo \My\General::getColoredString("Insert to tbl_keyword success key_name =  {$val} \n", 'green');
+                        } else {
+                            echo \My\General::getColoredString("Insert to tbl_keyword ERROR key_name =  {$val} \n", 'red');
+                        }
+                        unset($serviceKeyword, $gg_rp, $gg_rp_dom, $key_description, $id);
+                        $this->flush();
+
+                        //random sleep
+                        sleep(rand(4, 10));
+                    }
+                    $this->flush();
+                }
+                $this->flush();
+            }
+            $this->flush();
+        }
+        die('done');
+    }
+
     public function videosYoutubeAction()
     {
         $file_success = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Success';
         $file_error = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Error';
         try {
+            //        $arr_list_channel = include WEB_ROOT. '/data/list-channel.php';
             $instanceSearchContent = new \My\Search\Content();
             $google_config = General::$google_config;
             $client = new \Google_Client();
@@ -1306,50 +1400,57 @@ class ConsoleController extends MyController
             // Define an object that will be used to make all API requests.
             $youtube = new \Google_Service_YouTube($client);
 
-            try {
-                $arr_channel = [
-                    1 => [
-                        'UCCjesKhjzjezpmdP6eYRz5w',
-                        'UCBR8-60-B28hp2BmDPdntcQ'
-                    ],
-                    2 => [
-                        'UCC-RHF_77zQdKcA75hr5oTQ',
-                        'UC7_YxT-KID8kRbqZo7MyscQ'
-                    ],
-                    3 => [
-                        'UCNGxqw1lxkaRu81pSm6j5Sg',
-                        'UCi_V-NWe_nqsj5AlT3SIN_g'
-                    ],
-                    4 => [
-                        'UCqhnX4jA0A5paNd1v-zEysw',
-                        'UCeiYXex_fwgYDonaTcSIk6w'
-                    ],
-                    5 => [
-                        'UC_zgOsTPdML6tol9hLYh4fQ',
-                        'UCRUQQrm8_l3CVYxfq2kPMlg'
-                    ],
-                    6 => [
-                        'UC8v4vz_n2rys6Yxpj8LuOBA',
-                        'UCLFW3EKD2My9swWH4eTLaYw'
-                    ],
-                    7 => [
-                        'UCbNi_D3W-nb95JeHy1m6n_g',
-                        'UCH6vXjt-BA7QHl0KnfL-7RQ'
-                    ]
-                ];
-                foreach ($arr_channel as $cate_id => $channels) {
-
-                    foreach ($channels as $channel_id) {
+            //list channel
+            $arr_channel = [
+                1 => [
+                    'UCCjesKhjzjezpmdP6eYRz5w',
+                    'UCBR8-60-B28hp2BmDPdntcQ'
+                ],
+                2 => [
+                    'UCC-RHF_77zQdKcA75hr5oTQ',
+                    'UC7_YxT-KID8kRbqZo7MyscQ'
+                ],
+                3 => [
+                    'UCNGxqw1lxkaRu81pSm6j5Sg',
+                    'UCi_V-NWe_nqsj5AlT3SIN_g'
+                ],
+                4 => [
+                    'UCqhnX4jA0A5paNd1v-zEysw',
+                    'UCeiYXex_fwgYDonaTcSIk6w'
+                ],
+                5 => [
+                    'UC_zgOsTPdML6tol9hLYh4fQ',
+                    'UCRUQQrm8_l3CVYxfq2kPMlg'
+                ],
+                6 => [
+                    'UC8v4vz_n2rys6Yxpj8LuOBA',
+                    'UCLFW3EKD2My9swWH4eTLaYw'
+                ],
+                7 => [
+                    'UCbNi_D3W-nb95JeHy1m6n_g',
+                    'UCH6vXjt-BA7QHl0KnfL-7RQ'
+                ]
+            ];
+            foreach ($arr_channel as $cate_id => $channels) {
+                foreach ($channels as $channel_id) {
+                    $pageToken = '';
+                    for ($i = 0; $i <= 100; $i++) {
+                        if ($i != 0 && $pageToken == '') {
+                            break;
+                        }
                         $searchResponse = $youtube->search->listSearch(
                             'snippet', array(
                                 'channelId' => $channel_id,
-                                'maxResults' => 2
+                                'maxResults' => 2,
+                                'pageToken' => $pageToken
                             )
                         );
 
                         if (empty($searchResponse) || empty($searchResponse->getItems())) {
-                            continue;
+                            break;
                         }
+
+                        $pageToken = $searchResponse->getNextPageToken() ? $searchResponse->getNextPageToken() : '';
 
                         $videoIds = [];
                         foreach ($searchResponse->getItems() as $item) {
@@ -1363,8 +1464,32 @@ class ConsoleController extends MyController
                             continue;
                         }
 
+                        //chỉ lấy info của những video chưa có trong DB
+                        $arrContentList = $instanceSearchContent->getList(
+                            [
+                                'in_from_source' => $videoIds
+                            ],
+                            [],
+                            [
+                                'from_source'
+                            ]
+                        );
+
+                        if (!empty($arrContentList)) {
+                            foreach ($arrContentList as $content) {
+                                if (($key = array_search($content['from_source'], $videoIds)) !== false) {
+                                    unset($videoIds[$key]);
+                                }
+                            }
+                        }
+
+                        unset($arrContentList, $searchResponse);
+
+                        if (empty($videoIds)) {
+                            continue;
+                        }
+
                         $videoIds = join(',', $videoIds);
-                        unset($searchResponse);
 
                         # Call the videos.list method to retrieve location details for each video.
                         $searchResponse = $youtube->videos->listVideos('snippet, recordingDetails, contentDetails', array(
@@ -1465,7 +1590,7 @@ class ConsoleController extends MyController
                                 'from_source' => $id,
                                 'meta_keyword' => str_replace(' ', ',', $title),
                                 'updated_date' => time(),
-                                'cont_duration' => $item->getContentDetails()->getDuration(),
+                                'cont_duration' => \My\General::formatDurationLength($item->getContentDetails()->getDuration()),
                                 'tag_id' => empty($arr_tag_id) ? '' : ',' . implode(',', $arr_tag_id) . ','
                             ];
 
@@ -1475,7 +1600,7 @@ class ConsoleController extends MyController
                                 //$arr_data_content['cont_id'] = $id;
 
                                 //giảm lượng chia sẻ lên facebook
-//                                if ($id % 2 == 0) {
+//                                if ($id % 20 == 0) {
 //                                    $this->postToFb($arr_data_content);
 //                                }
                                 echo \My\General::getColoredString("Crawler success 1 post id = {$id} \n", 'green');
@@ -1483,10 +1608,7 @@ class ConsoleController extends MyController
                                 echo \My\General::getColoredString("Can not insert content db", 'red');
                             }
 
-                            unset($serviceContent);
-                            unset($arr_data_content);
-                            unset($instanceSearchTag);
-                            unset($serviceTag);
+                            unset($serviceContent, $arr_data_content, $instanceSearchTag, $serviceTag);
                             $this->flush();
                             continue;
                         }
@@ -1495,21 +1617,9 @@ class ConsoleController extends MyController
                         sleep(5);
                     }
                 }
-                return true;
-            } catch (\Exception $exc) {
-                if (APPLICATION_ENV !== 'production') {
-                    echo '<pre>';
-                    print_r([
-                        'code' => $exc->getCode(),
-                        'messages' => $exc->getMessage()
-                    ]);
-                    echo '</pre>';
-                    die();
-                }
-                return true;
             }
             return true;
-        } catch (\Exception $ex) {
+        } catch (\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
                 echo '<pre>';
                 print_r([
@@ -1733,12 +1843,6 @@ class ConsoleController extends MyController
 
     public function controlWorkerAction()
     {
-        //check crawler khoahoctv
-        exec("ps -ef | grep -v grep | grep --type=khoahocTV | awk '{ print $2 }'", $PID);
-        if (empty($PID)) {
-            shell_exec('php ' . PUBLIC_PATH . '/index.php crawler --type=khoahocTV');
-        }
-
         //check crawler from youtube
         exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
         if (empty($PID)) {

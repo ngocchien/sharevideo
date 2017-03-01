@@ -8,7 +8,6 @@ use Elastica\Query\QueryString,
     Elastica\Search,
     Elastica\Status,
     Elastica\Query as ESQuery,
-    My\Search\SearchAbstract,
     My\General;
 
 class Content extends SearchAbstract
@@ -414,7 +413,12 @@ class Content extends SearchAbstract
         if (isset($params['search_tag_id'])) {
             $addQuery = new ESQuery\Wildcard();
             $addQuery->setParam('tag_id', $params['search_tag_id']);
-//            $addQuery->addField('created_date', array('gte' => $params['more_created_date']));
+            $boolQuery->addMust($addQuery);
+        }
+
+        if (isset($params['in_from_source'])) {
+            $addQuery = new ESQuery\Terms();
+            $addQuery->setTerms('from_source', $params['in_from_source']);
             $boolQuery->addMust($addQuery);
         }
 

@@ -8,7 +8,6 @@ use Elastica\Query\QueryString,
     Elastica\Search,
     Elastica\Status,
     Elastica\Query as ESQuery,
-    My\Search\SearchAbstract,
     My\General;
 
 class KeywordOld extends SearchAbstract {

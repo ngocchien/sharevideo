@@ -13,7 +13,6 @@ class Tags extends ModelAbstract
 
     public function __construct()
     {
-        $this->setTmpKeyCache('tmpTags');
         parent::__construct();
     }
 

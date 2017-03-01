@@ -4,92 +4,100 @@ namespace My\Storage;
 
 use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\Sql\Sql,
-    Zend\Db\Adapter\Adapter,
-    Zend\Db\Sql\Where,
-    Zend\Db\Sql\Select,
-    My\Validator\Validate;
+    Zend\Db\Adapter\Adapter;
 
-class storageCategory extends AbstractTableGateway {
+class storageCategory extends AbstractTableGateway
+{
 
     protected $table = 'tbl_categories';
 
-    public function __construct(Adapter $adapter) {
+    public function __construct(Adapter $adapter)
+    {
         $adapter->getDriver()->getConnection()->connect();
         $this->adapter = $adapter;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->adapter->getDriver()->getConnection()->disconnect();
     }
 
-    public function getList($arrCondition = array()) {
-
+    public function getList($arrCondition = array())
+    {
         try {
             $strWhere = $this->_buildWhere($arrCondition);
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
             $select = $sql->Select($this->table)
-                    ->where('1=1' . $strWhere)
-                    ->order(array('cate_sort ASC', 'cate_slug ASC'));
+                ->where('1=1' . $strWhere)
+                ->order(array('cate_sort ASC', 'cate_slug ASC'));
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMesseges());
-            echo '</pre>';
-            die();
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMesseges());
+                echo '</pre>';
+                die();
             }
             return array();
         }
     }
 
-    public function getListLimit($arrCondition, $intPage, $intLimit, $strOrder) {
+    public function getListLimit($arrCondition, $intPage, $intLimit, $strOrder)
+    {
         try {
             $strWhere = $this->_buildWhere($arrCondition);
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
             $select = $sql->Select($this->table)
-                    ->where('1=1' . $strWhere)
-                    ->order($strOrder)
-                    ->limit($intLimit)
-                    ->offset($intLimit * ($intPage - 1));
+                ->where('1=1' . $strWhere)
+                ->order($strOrder)
+                ->limit($intLimit)
+                ->offset($intLimit * ($intPage - 1));
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
     }
 
-    public function getTotal($arrCondition = []) {
+    public function getTotal($arrCondition = [])
+    {
         try {
             $strWhere = $this->_buildWhere($arrCondition);
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
             $select = $sql->Select($this->table)
-                    ->columns(array('total' => new \Zend\Db\Sql\Expression('COUNT(*)')))
-                    ->where('1=1' . $strWhere);
+                ->columns(array('total' => new \Zend\Db\Sql\Expression('COUNT(*)')))
+                ->where('1=1' . $strWhere);
             $query = $sql->getSqlStringForSqlObject($select);
-            return (int) current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray())['total'];
+            return (int)current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray())['total'];
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
     }
 
-    public function getDetail($arrCondition = array()) {
+    public function getDetail($arrCondition = array())
+    {
         try {
             $strWhere = $this->_buildWhere($arrCondition);
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
             $select = $sql->Select($this->table)
-                    ->where('1=1' . $strWhere);
+                ->where('1=1' . $strWhere);
             $query = $sql->getSqlStringForSqlObject($select);
             return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
         } catch (\Zend\Http\Exception $exc) {
@@ -100,7 +108,8 @@ class storageCategory extends AbstractTableGateway {
         }
     }
 
-    public function add($p_arrParams) {
+    public function add($p_arrParams)
+    {
         try {
             if (!is_array($p_arrParams) || empty($p_arrParams)) {
                 return false;
@@ -114,18 +123,18 @@ class storageCategory extends AbstractTableGateway {
             }
             return $result;
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
     }
 
-    public function edit($p_arrParams, $intCateID) {
+    public function edit($p_arrParams, $intCateID)
+    {
         try {
             if (!is_array($p_arrParams) || empty($p_arrParams) || empty($intCateID)) {
                 return false;
@@ -139,35 +148,17 @@ class storageCategory extends AbstractTableGateway {
             return $result;
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
     }
 
-    public function updateTree($dataUpdate) {
-        $adapter = $this->adapter;
-        $sql = new Sql($adapter);
-        $query = "update " . $this->table . " set cate_grade = REPLACE(cate_grade,'" . $dataUpdate['cate_grade'] . "','" . $dataUpdate['grade_update'] . "'),cate_status =" . $dataUpdate['cate_status'] . " WHERE cate_grade LIKE '" . $dataUpdate['cate_grade'] . "%'";
-        $result = $adapter->query($query, $adapter::QUERY_MODE_EXECUTE);
-        $resultSet = new \Zend\Db\ResultSet\ResultSet();
-        $resultSet->initialize($result);
-        $result = $resultSet->count() ? true : false;
-        return $result;
-    }
-
-    public function updateStatusTree($dataUpdate) {
-        $adapter = $this->adapter;
-        $sql = new Sql($adapter);
-        $query = "update " . $this->table . " set cate_status = " . $dataUpdate['cate_status'] . " WHERE cate_grade LIKE '" . $dataUpdate['grade_update'] . "%'";
-        $result = $adapter->query($query, $adapter::QUERY_MODE_EXECUTE);
-        $resultSet = new \Zend\Db\ResultSet\ResultSet();
-        $resultSet->initialize($result);
-        $result = $resultSet->count() ? true : false;
-        return $result;
-    }
-
-    private function _buildWhere($arrCondition) {
+    private function _buildWhere($arrCondition)
+    {
 
         $strWhere = '';
 
@@ -206,8 +197,6 @@ class storageCategory extends AbstractTableGateway {
         if (isset($arrCondition['parent_id'])) {
             $strWhere .= " AND parent_id =" . $arrCondition['parent_id'];
         }
-
-
 
         return $strWhere;
     }

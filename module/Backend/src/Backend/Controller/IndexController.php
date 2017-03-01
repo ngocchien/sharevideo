@@ -77,6 +77,12 @@ class IndexController extends MyController
 
     public function indexAction()
     {
+//        $arr_list_channel = include WEB_ROOT. '/data/list-channel.php';
+//        echo '<pre>';
+//        print_r($arr_list_channel);
+//        echo '</pre>';
+//        die();
+        return;
         //,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27
         $instanceSearch = new \My\Search\Content();
         $arr_content = $instanceSearch->getList([

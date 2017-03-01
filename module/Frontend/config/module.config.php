@@ -54,7 +54,7 @@ return array(
             'index' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '[[/page[/:page]].html]',
+                    'route' => '[[/page[-:page]].html]',
                     'constraints' => array(
                         'page' => '[0-9]+',
                     ),
@@ -241,7 +241,7 @@ return array(
             'category' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/cate/[[:cateSlug]-[:cateId]][/page[/:page]][.html]',
+                    'route' => '/cate/[[:cateSlug]-[:cateId]][/page[-:page]][.html]',
                     'constraints' => array(
                         'controller' => 'category',
                         'action' => 'index',
@@ -263,7 +263,7 @@ return array(
             'tag' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/tag/[[:tagSlug]-[:tagId]][/page[/:page]][.html]',
+                    'route' => '/tag/[[:tagSlug]-[:tagId]][/page[-:page]][.html]',
                     'constraints' => array(
                         'controller' => 'tag',
                         'action' => 'index',

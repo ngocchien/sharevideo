@@ -30,12 +30,11 @@ class storagePermission extends AbstractTableGateway {
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -95,7 +94,10 @@ class storagePermission extends AbstractTableGateway {
             return (int) current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray())['total'];
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -114,7 +116,10 @@ class storagePermission extends AbstractTableGateway {
             return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -134,10 +139,13 @@ class storagePermission extends AbstractTableGateway {
             }
             return $result;
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
+            }
+            return false;
         }
     }
 
@@ -198,7 +206,10 @@ class storagePermission extends AbstractTableGateway {
 
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -235,7 +246,10 @@ class storagePermission extends AbstractTableGateway {
             return $this->delete($where);
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }

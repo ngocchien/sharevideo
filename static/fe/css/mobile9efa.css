@@ -132,8 +132,9 @@
 
 @media screen and (max-width: 799px) {
     #modal-form .container {
-        width: 95%!important;
+        width: 95% !important;
     }
+
     /* Header */
     #header .news .slogan {
         width: 100%;
@@ -206,7 +207,7 @@
     }
 
     /* View Page */
-    #view-page .container .main-content{
+    #view-page .container .main-content {
         padding-right: 0;
     }
 
@@ -215,19 +216,20 @@
     }
 
     /* Category Page */
-    #category-page .container .main-content{
+    #category-page .container .main-content {
         padding-right: 0;
     }
 
     #category-page .inline-channel {
         display: block;
     }
+
     #category-page .container .sidebar {
         display: none;
     }
 
     /* Search Page */
-    #search-page .container .main-content{
+    #search-page .container .main-content {
         padding-right: 0;
     }
 
@@ -253,7 +255,7 @@
     }
 
     /* Tag Page */
-    #tag-page .container .main-content{
+    #tag-page .container .main-content {
         padding-right: 0;
     }
 
@@ -277,7 +279,6 @@
     #tag-page .container .main-content {
         padding-right: 0;
     }
-
 
     #footer .about .menu .description-menu {
         display: none;
@@ -386,8 +387,8 @@
 
     /*Support wifichua customization*/
     .post-wfc {
-        width: 50%!important;
-        float: left!important;
+        width: 50% !important;
+        float: left !important;
         margin-top: 1px;
     }
 
@@ -629,4 +630,32 @@
     #tag-page .container .main-content .inside-container .inside .videos .post .content {
         padding-left: 5px;
     }
+}
+
+.pagination-container {
+    clear: both
+}
+
+.pagination {
+    display: block;
+    margin-bottom: 10px;
+    line-height: 2em;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 10px
+}
+
+.pagination li, .pagination li a {
+    display: inline-block
+}
+
+.pagination li a {
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin: 0 5px
+}
+
+.pagination li a:hover, .pagination li.active a {
+    background: #f8f8f8
 }

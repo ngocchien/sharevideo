@@ -4,8 +4,7 @@ namespace My\Storage;
 
 use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\Adapter\Adapter,
-    Zend\Db\Sql\Sql,
-    My\Validator\Validate;
+    Zend\Db\Sql\Sql;
 
 class storageTags extends AbstractTableGateway
 {
@@ -37,7 +36,10 @@ class storageTags extends AbstractTableGateway
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Zend\Http\Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -58,7 +60,10 @@ class storageTags extends AbstractTableGateway
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Zend\Http\Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -77,7 +82,10 @@ class storageTags extends AbstractTableGateway
             return (int)current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray())['total'];
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Zend\Http\Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -94,7 +102,10 @@ class storageTags extends AbstractTableGateway
             return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Zend\Http\Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }

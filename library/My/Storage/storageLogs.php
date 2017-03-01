@@ -4,10 +4,7 @@ namespace My\Storage;
 
 use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\Sql\Sql,
-    Zend\Db\Adapter\Adapter,
-    Zend\Db\Sql\Where,
-    Zend\Db\Sql\Select,
-    My\Validator\Validate;
+    Zend\Db\Adapter\Adapter;
 
 class storageLogs extends AbstractTableGateway {
 
@@ -41,10 +38,13 @@ class storageLogs extends AbstractTableGateway {
             }
             return $result;
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
+            }
+            return false;
         }
     }
     
@@ -61,10 +61,13 @@ class storageLogs extends AbstractTableGateway {
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
+            }
+            return false;
         }
     }
     

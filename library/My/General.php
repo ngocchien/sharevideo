@@ -36,6 +36,8 @@ class General
     const SEND_MAIL_MESSAGES = 1;
     //define social url
     const SOCIAL_FACEBOOK_URL = 'https://www.facebook.com/khampha.tech/';
+    const SOCIAL_GOOGLE_PLUS_URL = 'https://www.facebook.com/khampha.tech/';
+    const SOCIAL_TWITTER_URL = 'https://www.facebook.com/khampha.tech/';
 
     static $foreground_colors = array(
         'black' => '0;30', 'dark_gray' => '1;30',
@@ -758,31 +760,31 @@ class General
         return UPLOAD_URL . '/' . $controller . '/' . $strTime . $size . '/' . $name;
     }
 
-    public static function formatDurationLength($date)
+    public static function formatDurationLength($youtube_time)
     {
-        return '10:00';
-        $current = time() - $date;
+        preg_match_all('/(\d+)/', $youtube_time, $parts);
 
-        if ($current < 60) {
-            return $current . " giây trước";
-        } else {
-            $minute = round($current / 60);
-            if ($minute < 60) {
-                return $minute . " phút trước";
-            } else {
-                $house = round($minute / 60);
-                if ($house < 24) {
-                    return $house . " giờ trước";
-                } else {
-                    $day = round($house / 24);
-                    if ($day < 8) {
-                        return $day . " Ngày trước";
-                    } else {
-                        return date("d/m/Y", $date);
-                    }
-                }
-            }
+        // Put in zeros if we have less than 3 numbers.
+        if (count($parts[0]) == 1) {
+            array_unshift($parts[0], "0", "0");
+        } elseif (count($parts[0]) == 2) {
+            array_unshift($parts[0], "0");
         }
+
+        $sec_init = $parts[0][2];
+        $seconds = $sec_init % 60;
+        $seconds_overflow = floor($sec_init / 60);
+
+        $min_init = $parts[0][1] + $seconds_overflow;
+        $minutes = ($min_init) % 60;
+        $minutes_overflow = floor(($min_init) / 60);
+
+        $hours = $parts[0][0] + $minutes_overflow;
+
+        if ($hours != 0)
+            return str_pad($hours, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutes, 2, '0', STR_PAD_LEFT) . ':' . str_pad($seconds, 2, '0', STR_PAD_LEFT);
+        else
+            return str_pad($minutes, 2, '0', STR_PAD_LEFT) . ':' . str_pad($seconds, 2, '0', STR_PAD_LEFT);
     }
 
 }

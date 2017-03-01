@@ -31,7 +31,10 @@ class storageContact extends AbstractTableGateway {
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -48,7 +51,10 @@ class storageContact extends AbstractTableGateway {
             return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -82,7 +88,10 @@ class storageContact extends AbstractTableGateway {
             return $this->update($p_arrParams, 'contact_id=' . $contact_id);
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -102,7 +111,10 @@ class storageContact extends AbstractTableGateway {
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Zend\Http\Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -120,7 +132,10 @@ class storageContact extends AbstractTableGateway {
             return (int) current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray())['total'];
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Zend\Http\Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -139,7 +154,6 @@ class storageContact extends AbstractTableGateway {
         if (isset($arrCondition['not_status'])) {
             $strWhere .= " AND status !=" . (int) $arrCondition['not_status'];
         }
-
 
         return $strWhere;
     }

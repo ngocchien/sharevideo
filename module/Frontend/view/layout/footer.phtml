@@ -1,34 +1,39 @@
+<?php $arrTag = unserialize(ARR_TAG); ?>
 <footer id="footer">
     <div class="about">
         <div class="page-width">
             <div class="description">
-                <img src="<?php echo STATIC_URL;?>/images/general/logo-white-380x120.png"
+                <img src="<?php echo STATIC_URL; ?>/images/general/logo-white-380x120.png"
                      alt="Logo Thatvidieu">
-                <p>Kênh chia sẽ video giải trí hàng đầu Việt Nam. Thật vi diệu được thực hiện và ủng hộ bởi đông đảo
-                    cộng đồng cùng chia sẻ những khoảnh khắc hài hước, ý nghĩa của mình và bạn bè.</p>
+                <p>
+                    <?php echo \My\General::SITE_DOMAIN; ?> is website general hot video, funny videos, music videos,
+                    video beauty ... Brought to you comfortable moments after hours of hard work.
+                </p>
                 <div class="social">
                     <div class="follow-us">
-                        <p>Theo dõi thêm</p>
+                        <p>Follow US</p>
                         <ul>
-                            <li class="facebook"><a href="https://www.facebook.com/Thật-Vi-Diệu-1116825608374835"
-                                                    target="_blank"></a></li>
-                            <li class="google"><a href="#"
-                                                  onclick="Main.notification('Chức năng đang cập nhật :)'); return false;"></a>
+                            <li class="facebook">
+                                <a href="<?php echo \My\General::SOCIAL_FACEBOOK_URL; ?>" target="_blank"></a>
                             </li>
-                            <li class="twitter"><a href="#"
-                                                   onclick="Main.notification('Chức năng đang cập nhật :)'); return false;"></a>
+                            <li class="google">
+                                <a href="<?php echo \My\General::SOCIAL_GOOGLE_PLUS_URL; ?>" target="_blank">
+                                </a>
+                            </li>
+                            <li class="twitter">
+                                <a href="<?php echo \My\General::SOCIAL_TWITTER_URL; ?>" target="_blank"></a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="menu">
-                <p class="title-menu">Về chúng tôi</p>
-                <p class="description-menu">Thông tin về thatvidieu.com</p>
+                <p class="title-menu">About US</p>
+                <p class="description-menu">Info <?php echo \My\General::SITE_DOMAIN; ?></p>
                 <ul>
-                    <li><a href="about/index.html#info">Giới thiệu</a></li>
-                    <li><a href="about/index.html#terms">Điều khoản</a></li>
-                    <li><a href="about/index.html#contact">Liên hệ</a></li>
+                    <li><a href="about/index.html#info">Introduce</a></li>
+                    <li><a href="about/index.html#terms">Rules</a></li>
+                    <li><a href="about/index.html#contact">Contact</a></li>
                 </ul>
             </div>
             <div class="menu mobile-apps">
@@ -43,58 +48,16 @@
             </div>
             <div class="tags">
                 <p class="title-tags">Tags</p>
-                <p class="description-tags">Danh sách tag nổi bật</p>
+                <p class="description-tags">List Tag Highlights</p>
                 <ul>
-                    <li>
-                        <a href="tag/hai-huoc.html" title="Hài hước">
-                            Hài hước </a>
-                    </li>
-                    <li>
-                        <a href="tag/tinh-cam.html" title="Tình cảm">
-                            Tình cảm </a>
-                    </li>
-                    <li>
-                        <a href="tag/dong-vat.html" title="Động vật">
-                            Động vật </a>
-                    </li>
-                    <li>
-                        <a href="tag/cong-dong.html" title="Cộng đồng">
-                            Cộng đồng </a>
-                    </li>
-                    <li>
-                        <a href="tag/cam-dong.html" title="Cảm động">
-                            Cảm động </a>
-                    </li>
-                    <li>
-                        <a href="tag/y-nghia.html" title="Ý nghĩa">
-                            Ý nghĩa </a>
-                    </li>
-                    <li>
-                        <a href="tag/buc-xuc.html" title="Bức xúc">
-                            Bức xúc </a>
-                    </li>
-                    <li>
-                        <a href="tag/troll.html" title="Troll">
-                            Troll </a>
-                    </li>
-                    <li>
-                        <a href="tag/tre-em.html" title="Trẻ em">
-                            Trẻ em </a>
-                    </li>
-                    <li>
-                        <a href="tag/shock.html" title="Shock">
-                            Shock </a>
-                    </li>
+                    <?php foreach ($arrTag as $tag): ?>
+                        <li>
+                            <a href="<?php echo $this->Url('tag', array('tagSlug' => $tag['tag_slug'], 'tagId' => $tag['tag_id'])) ?>" title="<?php echo $tag['tag_name'] ?>">
+                                <?php echo $tag['tag_name'] ?> </a>
+                        </li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
-        </div>
-    </div>
-    <div class="copyright">
-        <div class="page-width">
-            <p>Giấy phép MXH số 521/GP-BTTTT cấp ngày 24/11/2016</p>
-            <p>Cơ quan cấp phép: Bộ Thông tin và Truyền thông</p>
-            <p>Chịu trách nhiệm nội dung: Mai Phạm Thanh Lâm</p>
-            <p>Bản quyền thuộc về thatvidieu.com © 2016</p>
         </div>
     </div>
 </footer>

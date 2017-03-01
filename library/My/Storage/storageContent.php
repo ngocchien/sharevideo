@@ -4,9 +4,7 @@ namespace My\Storage;
 
 use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\Sql\Sql,
-    Zend\Db\Adapter\Adapter,
-    My\Validator\Validate,
-    Zend\Db\TableGateway\TableGateway;
+    Zend\Db\Adapter\Adapter;
 
 class storageContent extends AbstractTableGateway
 {
@@ -39,7 +37,10 @@ class storageContent extends AbstractTableGateway
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -60,7 +61,10 @@ class storageContent extends AbstractTableGateway
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -79,7 +83,10 @@ class storageContent extends AbstractTableGateway
             return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return array();
         }
@@ -98,7 +105,10 @@ class storageContent extends AbstractTableGateway
             return (int)current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray())['total'];
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -148,12 +158,11 @@ class storageContent extends AbstractTableGateway
             }
             return $result;
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
@@ -179,7 +188,10 @@ class storageContent extends AbstractTableGateway
             return $result;
         } catch (\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
-                throw new \Exception($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }

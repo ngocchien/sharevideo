@@ -156,7 +156,7 @@ class SearchController extends MyController
             $this->renderer->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id']))));
 
             /*
-             * get 20 keyword tương tự
+             * get 40 keyword tương tự
              */
             $arrKeywordList = $instanceSearch->getListLimit(
                 [

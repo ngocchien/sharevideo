@@ -191,51 +191,51 @@ class MyController extends AbstractActionController
                 ],
                 ['cate_sort' => ['order' => 'asc'], 'cate_id' => ['order' => 'asc']]
             );
-            $arrCategoryParentList = [];
-            $arrCategoryByParent = [];
             $arrCategoryFormat = [];
 
             if (!empty($arrCategoryList)) {
                 foreach ($arrCategoryList as $arrCategory) {
-                    if ($arrCategory['parent_id'] == 0) {
-                        $arrCategoryParentList[$arrCategory['cate_id']] = $arrCategory;
-                    } else {
-                        $arrCategoryByParent[$arrCategory['parent_id']][] = $arrCategory;
-                    }
                     $arrCategoryFormat[$arrCategory['cate_id']] = $arrCategory;
                 }
             }
-            ksort($arrCategoryByParent);
-            define('ARR_CATEGORY_PARENT', serialize($arrCategoryParentList));
-            define('ARR_CATEGORY_BY_PARENT', serialize($arrCategoryByParent));
             define('ARR_CATEGORY', serialize($arrCategoryFormat));
 
-            //get list content hot
-            $instanceSearchContent = new \My\Search\Content();
-            $arr_content_hot = $instanceSearchContent->getListLimit(
-                ['cont_status' => 1],
+            //lấy 15 Tag mới nhất
+            $instanceSearchTag = new \My\Search\Tag();
+            $arrTag = $instanceSearchTag->getListLimit(
+                ['tag_status' => 1],
                 1,
-                10,
-                ['cont_views' => ['order' => 'desc']],
+                15,
+                ['tag_id' => ['order' => 'desc']],
                 [
-                    'cont_title',
-                    'cont_slug',
-                    'cont_main_image',
-                    'cont_description',
-                    'cont_id'
+                    'tag_name',
+                    'tag_slug',
+                    'tag_id'
                 ]
             );
-            define('ARR_CONTENT_HOT_LIST', serialize($arr_content_hot));
+            define('ARR_TAG', serialize($arrTag));
+
+            //get list content hot
+//            $instanceSearchContent = new \My\Search\Content();
+//            $arr_content_hot = $instanceSearchContent->getListLimit(
+//                ['cont_status' => 1],
+//                1,
+//                10,
+//                ['cont_views' => ['order' => 'desc']],
+//                [
+//                    'cont_title',
+//                    'cont_slug',
+//                    'cont_main_image',
+//                    'cont_description',
+//                    'cont_id'
+//                ]
+//            );
+//            define('ARR_CONTENT_HOT_LIST', serialize($arr_content_hot));
+
 
             define('KEYWORD_SEARCH', !empty($arrData['keyword']) && $arrData['action'] == 'index' && $arrData['controller'] == 'search' ? $arrData['keyword'] : NULL);
 
-            unset($arrKeywordList);
-            unset($arr_content_hot);
-            unset($instanceSearchCategory);
-            unset($arrCategory);
-            unset($arrCategoryParentList);
-            unset($arrCategoryByParent);
-            unset($arrCategoryFormat);
+            unset($arrKeywordList, $arr_content_hot, $instanceSearchCategory, $arrCategory, $arrCategoryParentList, $arrCategoryByParent, $arrCategoryFormat);
         }
     }
 

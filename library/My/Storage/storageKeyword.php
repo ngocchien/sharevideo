@@ -4,30 +4,30 @@ namespace My\Storage;
 
 use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\Sql\Sql,
-    Zend\Db\Adapter\Adapter,
-    Zend\Db\Sql\Where,
-    Zend\Db\Sql\Select,
-    My\Validator\Validate;
+    Zend\Db\Adapter\Adapter;
 
-class storageKeyword extends AbstractTableGateway {
+class storageKeyword extends AbstractTableGateway
+{
 
     protected $table = 'tbl_keywords';
 
-    public function __construct(Adapter $adapter) {
+    public function __construct(Adapter $adapter)
+    {
         $adapter->getDriver()->getConnection()->connect();
         $this->adapter = $adapter;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->adapter->getDriver()->getConnection()->disconnect();
     }
 
-    public function add($p_arrParams) {
+    public function add($p_arrParams)
+    {
         try {
             if (!is_array($p_arrParams) || empty($p_arrParams)) {
                 return false;
             }
-
 
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
@@ -42,14 +42,17 @@ class storageKeyword extends AbstractTableGateway {
             }
             return $result;
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
+            }
         }
     }
 
-    public function edit($p_arrParams, $id) {
+    public function edit($p_arrParams, $id)
+    {
         try {
             if (!is_array($p_arrParams) || empty($p_arrParams) || empty($id)) {
                 return false;
@@ -62,38 +65,42 @@ class storageKeyword extends AbstractTableGateway {
             }
             return $result;
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
             if (APPLICATION_ENV !== 'production') {
-                die($exc->getMessage());
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
             }
             return false;
         }
     }
 
-    public function getListLimit($arrCondition, $intPage, $intLimit, $strOrder) {
+    public function getListLimit($arrCondition, $intPage, $intLimit, $strOrder)
+    {
         try {
             $strWhere = $this->_buildWhere($arrCondition);
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
             $select = $sql->Select($this->table)
-                    ->where('1=1' . $strWhere)
-                    ->order($strOrder)
-                    ->limit($intLimit)
-                    ->offset($intLimit * ($intPage - 1));
+                ->where('1=1' . $strWhere)
+                ->order($strOrder)
+                ->limit($intLimit)
+                ->offset($intLimit * ($intPage - 1));
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Exception $exc) {
-            echo '<pre>';
-            print_r($exc->getMessage());
-            echo '</pre>';
-            die();
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
+            }
+            return false;
         }
     }
 
-    private function _buildWhere($arrCondition) {
+    private function _buildWhere($arrCondition)
+    {
         $strWhere = '';
         return $strWhere;
     }
