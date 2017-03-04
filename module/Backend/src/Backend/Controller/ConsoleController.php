@@ -1320,6 +1320,7 @@ class ConsoleController extends MyController
             $date = date('Ymd', $date);
             echo \My\General::getColoredString("Date = {$date}", 'cyan');
             $href = 'https://www.google.com/trends/hottrends/hotItems?ajax=1&pn=p1&htd=' . $date . '&htv=l';
+
             $responseCurl = General::crawler($href);
             $arrData = json_decode($responseCurl, true);
 
@@ -1342,7 +1343,8 @@ class ConsoleController extends MyController
                             continue;
                         }
 
-                        $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=212&espv=2&q=' . rawurlencode($val) . '&oq=' . rawurlencode($val);
+                        //$url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=212&espv=2&q=' . rawurlencode($val) . '&oq=' . rawurlencode($val);
+                        $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($val) . '&oq=' . rawurlencode($val);
 
                         $gg_rp = General::crawler($url_gg);
                         $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
@@ -1472,222 +1474,196 @@ class ConsoleController extends MyController
             // Define an object that will be used to make all API requests.
             $youtube = new \Google_Service_YouTube($client);
 
-            //list channel
-            $arr_channel = [
-                1 => [
-                    'UCCjesKhjzjezpmdP6eYRz5w',
-                    'UCBR8-60-B28hp2BmDPdntcQ'
-                ],
-                2 => [
-                    'UCC-RHF_77zQdKcA75hr5oTQ',
-                    'UC7_YxT-KID8kRbqZo7MyscQ'
-                ],
-                3 => [
-                    'UCNGxqw1lxkaRu81pSm6j5Sg',
-                    'UCi_V-NWe_nqsj5AlT3SIN_g'
-                ],
-                4 => [
-                    'UCqhnX4jA0A5paNd1v-zEysw',
-                    'UCeiYXex_fwgYDonaTcSIk6w'
-                ],
-                5 => [
-                    'UC_zgOsTPdML6tol9hLYh4fQ',
-                    'UCRUQQrm8_l3CVYxfq2kPMlg'
-                ],
-                6 => [
-                    'UC8v4vz_n2rys6Yxpj8LuOBA',
-                    'UCLFW3EKD2My9swWH4eTLaYw'
-                ],
-                7 => [
-                    'UCbNi_D3W-nb95JeHy1m6n_g',
-                    'UCH6vXjt-BA7QHl0KnfL-7RQ'
-                ]
-            ];
-            foreach ($arr_channel as $cate_id => $channels) {
-                foreach ($channels as $channel_id) {
-                    $pageToken = '';
-                    for ($i = 0; $i <= 100; $i++) {
-                        if ($i != 0 && $pageToken == '') {
-                            break;
+            $arr_cate_channel = include_once(WEB_ROOT . '/data/list-channel.php');
+            $arr_channel_cate = [];
+            foreach ($arr_cate_channel as $cate => $arr_channel) {
+                foreach ($arr_channel as $channel) {
+                    $arr_channel_cate[$channel] = $cate;
+                }
+            }
+            unset($arr_cate_channel);
+            $arr_channel_cate = $this->custom_shuffle($arr_channel_cate);
+
+            foreach ($arr_channel_cate as $channel_id => $cate_id) {
+                $pageToken = '';
+                for ($i = 0; $i <= 100; $i++) {
+                    if ($i != 0 && $pageToken == '') {
+                        break;
+                    }
+
+                    //sleep request
+                    sleep(5);
+
+                    $searchResponse = $youtube->search->listSearch(
+                        'snippet', array(
+                            'channelId' => $channel_id,
+                            'maxResults' => 50,
+                            'pageToken' => $pageToken
+                        )
+                    );
+
+                    if (empty($searchResponse) || empty($searchResponse->getItems())) {
+                        break;
+                    }
+
+                    $pageToken = $searchResponse->getNextPageToken() ? $searchResponse->getNextPageToken() : '';
+
+                    $videoIds = [];
+                    foreach ($searchResponse->getItems() as $item) {
+                        if (empty($item) || empty($item->getSnippet()) || empty($item->getId()->getVideoId())) {
+                            continue;
                         }
-                        $searchResponse = $youtube->search->listSearch(
-                            'snippet', array(
-                                'channelId' => $channel_id,
-                                'maxResults' => 2,
-                                'pageToken' => $pageToken
-                            )
-                        );
+                        array_push($videoIds, $item->getId()->getVideoId());
+                    }
 
-                        if (empty($searchResponse) || empty($searchResponse->getItems())) {
-                            break;
-                        }
+                    if (empty($videoIds)) {
+                        continue;
+                    }
 
-                        $pageToken = $searchResponse->getNextPageToken() ? $searchResponse->getNextPageToken() : '';
+                    //chỉ lấy info của những video chưa có trong DB
+                    $arrContentList = $instanceSearchContent->getList(
+                        [
+                            'in_from_source' => $videoIds
+                        ],
+                        [],
+                        [
+                            'from_source'
+                        ]
+                    );
 
-                        $videoIds = [];
-                        foreach ($searchResponse->getItems() as $item) {
-                            if (empty($item) || empty($item->getSnippet()) || empty($item->getId()->getVideoId())) {
-                                continue;
+                    if (!empty($arrContentList)) {
+                        foreach ($arrContentList as $content) {
+                            if (($key = array_search($content['from_source'], $videoIds)) !== false) {
+                                unset($videoIds[$key]);
                             }
-                            array_push($videoIds, $item->getId()->getVideoId());
                         }
+                    }
 
-                        if (empty($videoIds)) {
+                    unset($arrContentList, $searchResponse);
+
+                    if (empty($videoIds)) {
+                        continue;
+                    }
+
+                    $videoIds = join(',', $videoIds);
+
+                    # Call the videos.list method to retrieve location details for each video.
+                    $searchResponse = $youtube->videos->listVideos('snippet, recordingDetails, contentDetails', array(
+                        'id' => $videoIds,
+                    ));
+
+                    foreach ($searchResponse->getItems() as $item) {
+
+                        if (empty($item) || empty($item->getSnippet())) {
+                            continue;
+                        }
+                        $id = $item->getId();
+
+                        if (empty($id)) {
                             continue;
                         }
 
-                        //chỉ lấy info của những video chưa có trong DB
-                        $arrContentList = $instanceSearchContent->getList(
-                            [
-                                'in_from_source' => $videoIds
-                            ],
-                            [],
-                            [
-                                'from_source'
-                            ]
-                        );
+                        $title = $item->getSnippet()->getTitle();
 
-                        if (!empty($arrContentList)) {
-                            foreach ($arrContentList as $content) {
-                                if (($key = array_search($content['from_source'], $videoIds)) !== false) {
-                                    unset($videoIds[$key]);
-                                }
-                            }
-                        }
-
-                        unset($arrContentList, $searchResponse);
-
-                        if (empty($videoIds)) {
+                        if (empty($title)) {
                             continue;
                         }
 
-                        $videoIds = join(',', $videoIds);
+                        $is_exits = $instanceSearchContent->getDetail([
+                            'cont_slug' => General::getSlug($title),
+                            'status' => 1
+                        ]);
 
-                        # Call the videos.list method to retrieve location details for each video.
-                        $searchResponse = $youtube->videos->listVideos('snippet, recordingDetails, contentDetails', array(
-                            'id' => $videoIds,
-                        ));
+                        if (!empty($is_exits)) {
+                            echo \My\General::getColoredString("content title = {$title} is exits \n", 'red');
+                            continue;
+                        }
 
-                        foreach ($searchResponse->getItems() as $item) {
+                        //begin insert tags
+                        $arr_tags = $item->getSnippet()->getTags();
+                        $arr_tag_id = [];
+                        if (!empty($arr_tags)) {
+                            $instanceSearchTag = new \My\Search\Tag();
 
-                            if (empty($item) || empty($item->getSnippet())) {
-                                continue;
+                            foreach ($arr_tags as $tag) {
+                                $condition['in_tag_slug'][] = General::getSlug($tag);
                             }
-                            $id = $item->getId();
-
-                            if (empty($id)) {
-                                continue;
-                            }
-
-                            $title = $item->getSnippet()->getTitle();
-
-                            if (empty($title)) {
-                                continue;
-                            }
-
-                            $is_exits = $instanceSearchContent->getDetail([
-                                'cont_slug' => General::getSlug($title),
-                                'status' => 1
-                            ]);
-
-                            if (!empty($is_exits)) {
-                                echo \My\General::getColoredString("content title = {$title} is exits \n", 'red');
-                                continue;
-                            }
-
-                            //begin insert tags
-                            $arr_tags = $item->getSnippet()->getTags();
-                            $arr_tag_id = [];
-                            if (!empty($arr_tags)) {
-                                $instanceSearchTag = new \My\Search\Tag();
-
-                                foreach ($arr_tags as $tag) {
-                                    $condition['in_tag_slug'][] = General::getSlug($tag);
+                            $arr_tag_list = $instanceSearchTag->getList($condition, ['tag_id' => ['order' => 'asc']]);
+                            $arr_tag_exits = [];
+                            if ($arr_tag_list) {
+                                foreach ($arr_tag_list as $arr) {
+                                    $arr_tag_id[] = $arr['tag_id'];
+                                    $arr_tag_exits[] = $arr['tag_slug'];
                                 }
-                                $arr_tag_list = $instanceSearchTag->getList($condition, ['tag_id' => ['order' => 'asc']]);
-                                $arr_tag_exits = [];
-                                if ($arr_tag_list) {
-                                    foreach ($arr_tag_list as $arr) {
-                                        $arr_tag_id[] = $arr['tag_id'];
-                                        $arr_tag_exits[] = $arr['tag_slug'];
-                                    }
-                                }
-                                $serviceTag = $this->serviceLocator->get('My\Models\Tags');
+                            }
+                            $serviceTag = $this->serviceLocator->get('My\Models\Tags');
 
-                                foreach ($arr_tags as $tag) {
-                                    if (in_array(General::getSlug($tag), $arr_tag_exits)) {
-                                        continue;
-                                    }
-                                    $arr_data_tag = [
-                                        'tag_name' => $tag,
-                                        'tag_slug' => General::getSlug($tag),
-                                        'user_created' => 1,
-                                        'created_date' => time(),
-                                        'tag_status' => 1
-                                    ];
-                                    $tag_id = $serviceTag->add($arr_data_tag);
-                                    if ($tag_id > 0) {
-                                        $arr_tag_id[] = $tag_id;
-                                    }
+                            foreach ($arr_tags as $tag) {
+                                if (in_array(General::getSlug($tag), $arr_tag_exits)) {
                                     continue;
                                 }
+                                $arr_data_tag = [
+                                    'tag_name' => $tag,
+                                    'tag_slug' => General::getSlug($tag),
+                                    'user_created' => 1,
+                                    'created_date' => time(),
+                                    'tag_status' => 1
+                                ];
+                                $tag_id = $serviceTag->add($arr_data_tag);
+                                if ($tag_id > 0) {
+                                    $arr_tag_id[] = $tag_id;
+                                }
+                                continue;
                             }
+                        }
 
-                            $description = $item->getSnippet()->getDescription();
-                            $arr_image = [];
-                            $arr_image_yb = empty($item->getSnippet()->getThumbnails()['modelData']) ? [] : $item->getSnippet()->getThumbnails()['modelData'];
-                            $arr_image_yb['sddefault'] = [
-                                'url' => 'https://img.youtube.com/vi/' . $id . '/sddefault.jpg',
-                                'width' => '640',
-                                'height' => '480'
-                            ];
+                        $description = $item->getSnippet()->getDescription();
+                        $arr_image = [];
+                        $arr_image_yb = empty($item->getSnippet()->getThumbnails()['modelData']) ? [] : $item->getSnippet()->getThumbnails()['modelData'];
 
-                            foreach ($arr_image_yb as $thumbnail) {
-                                $size = $thumbnail['width'] . 'x' . $thumbnail['height'];
-                                $arr_image[$size] = \My\General::crawlerImage($thumbnail['url'], $title, $size);
-                            }
+                        foreach ($arr_image_yb as $thumbnail) {
+                            $size = $thumbnail['width'] . 'x' . $thumbnail['height'];
+                            $arr_image[$size] = \My\General::crawlerImage($thumbnail['url'], $title, $size);
+                        }
 
-                            $arr_data_content = [
-                                'cont_title' => $title,
-                                'cont_slug' => \My\General::getSlug($title),
-                                'cont_image' => json_encode($arr_image),
-                                'cont_detail' => html_entity_decode($description),
-                                'created_date' => time(),
-                                'user_created' => 1,
-                                'cate_id' => $cate_id,
-                                'cont_description' => $description ? $description : $title,
-                                'cont_status' => 1,
-                                'cont_views' => 0,
-                                'method' => 'crawler',
-                                'from_source' => $id,
-                                'meta_keyword' => str_replace(' ', ',', $title),
-                                'updated_date' => time(),
-                                'cont_duration' => \My\General::formatDurationLength($item->getContentDetails()->getDuration()),
-                                'tag_id' => empty($arr_tag_id) ? '' : ',' . implode(',', $arr_tag_id) . ','
-                            ];
+                        $arr_data_content = [
+                            'cont_title' => $title,
+                            'cont_slug' => \My\General::getSlug($title),
+                            'cont_image' => json_encode($arr_image),
+                            'cont_detail' => html_entity_decode($description),
+                            'created_date' => time(),
+                            'user_created' => 1,
+                            'cate_id' => $cate_id,
+                            'cont_description' => $description ? $description : $title,
+                            'cont_status' => 1,
+                            'cont_views' => 0,
+                            'method' => 'crawler',
+                            'from_source' => $id,
+                            'meta_keyword' => str_replace(' ', ',', $title),
+                            'updated_date' => time(),
+                            'cont_duration' => \My\General::formatDurationLength($item->getContentDetails()->getDuration()),
+                            'tag_id' => empty($arr_tag_id) ? '' : ',' . implode(',', $arr_tag_id) . ','
+                        ];
 
-                            $serviceContent = $this->serviceLocator->get('My\Models\Content');
-                            $id = $serviceContent->add($arr_data_content);
-                            if ($id) {
-                                //$arr_data_content['cont_id'] = $id;
+                        $serviceContent = $this->serviceLocator->get('My\Models\Content');
+                        $id = $serviceContent->add($arr_data_content);
+                        if ($id) {
+                            //$arr_data_content['cont_id'] = $id;
 
-                                //giảm lượng chia sẻ lên facebook
+                            //giảm lượng chia sẻ lên facebook
 //                                if ($id % 20 == 0) {
 //                                    $this->postToFb($arr_data_content);
 //                                }
-                                echo \My\General::getColoredString("Crawler success 1 post id = {$id} \n", 'green');
-                            } else {
-                                echo \My\General::getColoredString("Can not insert content db", 'red');
-                            }
-
-                            unset($serviceContent, $arr_data_content, $instanceSearchTag, $serviceTag);
-                            $this->flush();
-                            continue;
+                            echo \My\General::getColoredString("Crawler success 1 post id = {$id} \n", 'green');
+                        } else {
+                            echo \My\General::getColoredString("Can not insert content db", 'red');
                         }
-                        unset($searchResponse);
 
-                        sleep(5);
+                        unset($serviceContent, $arr_data_content, $instanceSearchTag, $serviceTag);
+                        $this->flush();
+                        continue;
                     }
+                    unset($searchResponse);
                 }
             }
             return true;
@@ -1922,6 +1898,20 @@ class ConsoleController extends MyController
         }
 
         return true;
+    }
+
+    public function custom_shuffle($my_array = array())
+    {
+        $copy = array();
+        while (count($my_array)) {
+            // takes a rand array elements by its key
+            $element = array_rand($my_array);
+            // assign the array and its value to an another array
+            $copy[$element] = $my_array[$element];
+            //delete the element from source array
+            unset($my_array[$element]);
+        }
+        return $copy;
     }
 
 }

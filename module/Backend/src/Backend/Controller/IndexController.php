@@ -75,8 +75,35 @@ class IndexController extends MyController
         }
     }
 
+    public function custom_shuffle($my_array = array())
+    {
+        $copy = array();
+        while (count($my_array)) {
+            // takes a rand array elements by its key
+            $element = array_rand($my_array);
+            // assign the array and its value to an another array
+            $copy[$element] = $my_array[$element];
+            //delete the element from source array
+            unset($my_array[$element]);
+        }
+        return $copy;
+    }
+
     public function indexAction()
     {
+
+        return;
+
+        $arr_cate_channel = include_once(WEB_ROOT . '/data/list-channel.php');
+        $arr_channel_cate = [];
+        foreach ($arr_cate_channel as $cate => $arr_channel) {
+            foreach ($arr_channel as $channel) {
+                $arr_channel_cate[$channel] = $cate;
+            }
+        }
+        unset($arr_cate_channel);
+        $arr_channel_cate = $this->custom_shuffle($arr_channel_cate);
+
 
         $instanceSearch = new \My\Search\ContentView();
 

@@ -757,7 +757,7 @@ class General
             return false;
         }
 
-        return UPLOAD_URL . '/' . $controller . '/' . $strTime . $size . '/' . $name;
+        return '/' . $controller . '/' . $strTime . $size . '/' . $name;
     }
 
     public static function formatDurationLength($youtube_time)
