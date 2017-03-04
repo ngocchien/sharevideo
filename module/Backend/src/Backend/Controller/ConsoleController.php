@@ -1319,7 +1319,7 @@ class ConsoleController extends MyController
             $date = strtotime('-' . $i . ' days', strtotime($current_date));
             $date = date('Ymd', $date);
             echo \My\General::getColoredString("Date = {$date}", 'cyan');
-            $href = 'https://www.google.com/trends/hottrends/hotItems?ajax=1&pn=p28&htd=' . $date . '&htv=l';
+            $href = 'https://www.google.com/trends/hottrends/hotItems?ajax=1&pn=p1&htd=' . $date . '&htv=l';
             $responseCurl = General::crawler($href);
             $arrData = json_decode($responseCurl, true);
 
