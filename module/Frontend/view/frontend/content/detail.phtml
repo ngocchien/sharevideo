@@ -25,22 +25,22 @@ $url_video = 'https://www.youtube.com/watch?v=' . $arr_content_detail['from_sour
                         <div class="social">
                             <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                data-short-link="FAEAAA"
-                               data-seo_id="<?php echo $arr_content_detail['cont_title']; ?>"
+                               data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                onclick="ViewPage.copyToClipboard(this); return false;" class="short-link">
                             </a>
                             <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                data-short-link="FAEAAA"
-                               data-seo_id="276-ve-xu-hoa-vang-tren-co-xanh"
+                               data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                onclick="ViewPage.shareSocial(this, 'facebook'); return false;" class="facebook">
                             </a>
                             <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                data-short-link="FAEAAA"
-                               data-seo_id="276-ve-xu-hoa-vang-tren-co-xanh"
+                               data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                onclick="ViewPage.shareSocial(this, 'google'); return false;" class="google">
                             </a>
                             <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                data-short-link="FAEAAA"
-                               data-seo_id="276-ve-xu-hoa-vang-tren-co-xanh"
+                               data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                onclick="ViewPage.shareSocial(this, 'twitter'); return false;" class="twitter">
                             </a>
                         </div>
@@ -102,17 +102,17 @@ $url_video = 'https://www.youtube.com/watch?v=' . $arr_content_detail['from_sour
                             <div class="social">
                                 <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                    data-short-link="FAEAAA"
-                                   data-seo_id="<?php echo $arr_content_detail['cont_title']; ?>"
+                                   data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                    onclick="ViewPage.shareSocial(this, 'facebook'); return false;" class="facebook">
                                 </a>
                                 <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                    data-short-link="FAEAAA"
-                                   data-seo_id="<?php echo $arr_content_detail['cont_title']; ?>"
+                                   data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                    onclick="ViewPage.shareSocial(this, 'google'); return false;" class="google">
                                 </a>
                                 <a href="#" data-title="<?php echo $arr_content_detail['cont_title']; ?>"
                                    data-short-link="FAEAAA"
-                                   data-seo_id="<?php echo $arr_content_detail['cont_title']; ?>"
+                                   data-seo_id="<?php echo $this->serverUrl() . $this->Url('view-content', ['contentSlug' => $arr_content_detail['cont_slug'], 'contentId' => $arr_content_detail['cont_id']]); ?>"
                                    onclick="ViewPage.shareSocial(this, 'twitter'); return false;" class="twitter">
                                 </a>
                             </div>
@@ -174,7 +174,7 @@ $url_video = 'https://www.youtube.com/watch?v=' . $arr_content_detail['from_sour
                         ?>
                         <div class="post">
                             <div class="poster"
-                                 style="background: url(<?php echo $cont_image['120x90']; ?>) no-repeat center;">
+                                 style="background: url(<?php echo UPLOAD_URL . $cont_image['120x90']; ?>) no-repeat center;">
                                 <div class="bg-gradient"></div>
                                 <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
                                    title="<?php echo $arr_content['cont_title']; ?>"
@@ -235,4 +235,7 @@ $url_video = 'https://www.youtube.com/watch?v=' . $arr_content_detail['from_sour
         },
         "description": "<?php echo $arr_content_detail['cont_description']; ?>"
     }
+
+
+
 </script>

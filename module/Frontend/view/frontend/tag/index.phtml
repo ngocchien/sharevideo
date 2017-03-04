@@ -18,7 +18,7 @@
                             ?>
                             <div class="post">
                                 <div class="poster"
-                                     style="background-image: url(<?php echo $cont_image['320x180']; ?>)">
+                                     style="background-image: url(<?php echo UPLOAD_URL . $cont_image['320x180']; ?>)">
                                     <div class="bg-gradient"></div>
                                     <p class="duration">00:54</p>
                                     <p class="view"><span
@@ -56,7 +56,7 @@
                     ?>
                     <div class="post">
                         <div class="poster"
-                             style="background: url(<?php echo $cont_image['120x90']; ?>) no-repeat center;">
+                             style="background: url(<?php echo UPLOAD_URL . $cont_image['120x90']; ?>) no-repeat center;">
                             <div class="bg-gradient"></div>
                             <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]) ?>"
                                title="<?php echo $arr_content['cont_title']; ?>" class="link">
