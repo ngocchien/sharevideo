@@ -1685,7 +1685,7 @@ class ConsoleController extends MyController
     public function videosYoutubeNewAction()
     {
         $params = $this->request->getParams();
-        
+
         $pid = $params['pid'];
 
         $file_success = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Success';
@@ -1914,7 +1914,7 @@ class ConsoleController extends MyController
 
             exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
 
-            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . $PID);
+            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . current($PID));
 
             return true;
         } catch (\Exception $exc) {
