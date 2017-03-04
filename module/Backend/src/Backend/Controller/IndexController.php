@@ -93,8 +93,21 @@ class IndexController extends MyController
     {
 
         return;
-
+//
         $arr_cate_channel = include_once(WEB_ROOT . '/data/list-channel.php');
+//        echo '<pre>';
+//        print_r($arr_cate_channel);
+//        echo '</pre>';
+////        die();
+//        echo '<pre>';
+//        $first_key = key($arr_channel_cate);
+//        print_r([
+//            $arr_cate_channel[$first_key],
+//            $first_key
+//        ]);
+//        echo '</pre>';
+//        die();
+
         $arr_channel_cate = [];
         foreach ($arr_cate_channel as $cate => $arr_channel) {
             foreach ($arr_channel as $channel) {
@@ -103,6 +116,19 @@ class IndexController extends MyController
         }
         unset($arr_cate_channel);
         $arr_channel_cate = $this->custom_shuffle($arr_channel_cate);
+
+        echo '<pre>';
+        print_r($arr_channel_cate);
+        echo '</pre>';
+//        die();
+        echo '<pre>';
+        $first_key = key($arr_channel_cate);
+        print_r([
+            $arr_channel_cate[$first_key],
+            $first_key
+        ]);
+        echo '</pre>';
+        die();
 
 
         $instanceSearch = new \My\Search\ContentView();
