@@ -1385,7 +1385,7 @@ class ConsoleController extends MyController
     {
         $current_date = date('Y-m-d');
         $instanceSearchKeyWord = new \My\Search\Keyword();
-        for ($i = 0; $i <= 2; $i++) {
+        for ($i = 0; $i <= 10; $i++) {
             $date = strtotime('-' . $i . ' days', strtotime($current_date));
             $date = date('Ymd', $date);
             echo \My\General::getColoredString("Date = {$date}", 'cyan');

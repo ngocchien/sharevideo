@@ -12,7 +12,7 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 
 $staticURL = APPLICATION_ENV === 'production' ? 'http://static.sharevideoclip.com' : 'http://dev.st.sharevideoclip.com';
 $baseURL = APPLICATION_ENV === 'production' ? 'http://sharevideoclip.com' : 'http://dev.sharevideoclip.com';
-$uploadURL = APPLICATION_ENV === 'production' ? 'http://up.sharevideoclip.com' : 'http://dev.up.sharevideoclip.com';
+$uploadURL = APPLICATION_ENV === 'production' ? 'http://upload.sharevideoclip.com' : 'http://dev.up.sharevideoclip.com';
 
 //define variable
 defined('WEB_ROOT') || define('WEB_ROOT', realpath(dirname(dirname(__FILE__))));
