@@ -1685,6 +1685,10 @@ class ConsoleController extends MyController
     public function videosYoutubeNewAction()
     {
         $params = $this->request->getParams();
+        echo '<pre>';
+        print_r($params);
+        echo '</pre>';
+        die();
         $pid = $params['pid'];
 
         $file_success = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Success';
@@ -1694,7 +1698,7 @@ class ConsoleController extends MyController
             if (!empty($pid)) {
                 shell_exec('kill -9 ' . $pid);
             }
-            
+
             if (file_exists($path_file_name)) {
                 $arr_channel_cate = file_get_contents($path_file_name);
                 $arr_channel_cate = unserialize($arr_channel_cate);

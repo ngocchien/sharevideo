@@ -164,11 +164,11 @@ return array(
                 ),
                 'videos-new' => array(
                     'options' => array(
-                        'route' => 'videos-youtube-new',
+                        'route' => 'videos-youtube-new [--pid=]',
                         'defaults' => array(
                             '__NAMESPACE__' => 'Backend\Controller',
                             'controller' => 'console',
-                            'action' => 'videos-youtube-new [--pid=]'
+                            'action' => 'videos-youtube-new'
                         ),
                     ),
                 ),
