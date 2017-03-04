@@ -1343,6 +1343,7 @@ class ConsoleController extends MyController
                             continue;
                         }
 
+                        sleep(rand(4, 10));
                         //$url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=212&espv=2&q=' . rawurlencode($val) . '&oq=' . rawurlencode($val);
                         $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($val) . '&oq=' . rawurlencode($val);
 
@@ -1372,7 +1373,7 @@ class ConsoleController extends MyController
                         $this->flush();
 
                         //random sleep
-                        sleep(rand(4, 10));
+//                        sleep(rand(4, 10));
                     }
                     $this->flush();
                 }
