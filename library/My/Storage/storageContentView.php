@@ -6,10 +6,10 @@ use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\Sql\Sql,
     Zend\Db\Adapter\Adapter;
 
-class storageContent extends AbstractTableGateway
+class storageContentView extends AbstractTableGateway
 {
 
-    protected $table = 'tbl_contents';
+    protected $table = 'tbl_content_view';
 
     public function __construct(Adapter $adapter)
     {
@@ -24,21 +24,19 @@ class storageContent extends AbstractTableGateway
 
     public function getList($arrCondition = array())
     {
-
         try {
             $strWhere = $this->_buildWhere($arrCondition);
             $adapter = $this->adapter;
             $sql = new Sql($adapter);
             $select = $sql->Select($this->table)
                 ->where('1=1' . $strWhere)
-                ->order(array('cont_id DESC'));
-
+                ->order(array('id ASC', 'id ASC'));
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
                 echo '<pre>';
-                print_r($exc->getMessage());
+                print_r($exc->getMesseges());
                 echo '</pre>';
                 die();
             }
@@ -46,7 +44,7 @@ class storageContent extends AbstractTableGateway
         }
     }
 
-    public function getListLimit($arrCondition = [], $intPage = 1, $intLimit = 15, $strOrder = 'cont_id DESC')
+    public function getListLimit($arrCondition, $intPage, $intLimit, $strOrder)
     {
         try {
             $strWhere = $this->_buildWhere($arrCondition);
@@ -59,28 +57,6 @@ class storageContent extends AbstractTableGateway
                 ->offset($intLimit * ($intPage - 1));
             $query = $sql->getSqlStringForSqlObject($select);
             return $adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray();
-        } catch (\Zend\Http\Exception $exc) {
-            if (APPLICATION_ENV !== 'production') {
-                echo '<pre>';
-                print_r($exc->getMessage());
-                echo '</pre>';
-                die();
-            }
-            return array();
-        }
-    }
-
-    public function getDetail($arrCondition = array())
-    {
-        try {
-            $strWhere = $this->_buildWhere($arrCondition);
-            $adapter = $this->adapter;
-            $sql = new Sql($adapter);
-            $select = $sql->Select($this->table)
-                ->where('1=1' . $strWhere);
-            $query = $sql->getSqlStringForSqlObject($select);
-
-            return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
         } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
                 echo '<pre>';
@@ -114,23 +90,36 @@ class storageContent extends AbstractTableGateway
         }
     }
 
+    public function getDetail($arrCondition = array())
+    {
+        try {
+            $strWhere = $this->_buildWhere($arrCondition);
+            $adapter = $this->adapter;
+            $sql = new Sql($adapter);
+            $select = $sql->Select($this->table)
+                ->where('1=1' . $strWhere);
+            $query = $sql->getSqlStringForSqlObject($select);
+            return current($adapter->query($query, $adapter::QUERY_MODE_EXECUTE)->toArray());
+        } catch (\Zend\Http\Exception $exc) {
+            if (APPLICATION_ENV !== 'production') {
+                die($exc->getMessage());
+            }
+            return array();
+        }
+    }
+
     public function add($p_arrParams)
     {
         try {
             if (!is_array($p_arrParams) || empty($p_arrParams)) {
                 return false;
             }
-
-            $adapter = $this->adapter;
-            $sql = new Sql($adapter);
-            $insert = $sql->insert($this->table)->values($p_arrParams);
-            $query = $sql->getSqlStringForSqlObject($insert);
-            $adapter->createStatement($query)->execute();
-            $result = $adapter->getDriver()->getLastGeneratedValue();
+            $result = $this->insert($p_arrParams);
             if ($result) {
-                $p_arrParams['cont_id'] = $result;
-                $instanceJob = new \My\Job\JobContent();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeContent', $p_arrParams);
+                $result = $this->lastInsertValue;
+                $p_arrParams['id'] = $result;
+                $instanceJob = new \My\Job\JobContentView();
+                $instanceJob->addJob(SEARCH_PREFIX . 'writeContentView', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -150,43 +139,14 @@ class storageContent extends AbstractTableGateway
             if (!is_array($p_arrParams) || empty($p_arrParams) || empty($id)) {
                 return false;
             }
-            $result = $this->update($p_arrParams, 'cont_id=' . $id);
+            $result = $this->update($p_arrParams, 'id=' . $id);
             if ($result) {
-                $p_arrParams['cont_id'] = $id;
-                $instanceJob = new \My\Job\JobContent();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editContent', $p_arrParams);
+                $p_arrParams['id'] = $id;
+                $instanceJob = new \My\Job\JobContentView();
+                $instanceJob->addJob(SEARCH_PREFIX . 'editContentView', $p_arrParams);
             }
             return $result;
-        } catch (\Exception $exc) {
-            if (APPLICATION_ENV !== 'production') {
-                echo '<pre>';
-                print_r($exc->getMessage());
-                echo '</pre>';
-                die();
-            }
-            return false;
-        }
-    }
-
-    public function multiEdit($p_arrParams, $arrCondition)
-    {
-        try {
-            if (!is_array($p_arrParams) || empty($p_arrParams) || empty($arrCondition) || !is_array($arrCondition)) {
-                return false;
-            }
-            $strWhere = $this->_buildWhere($arrCondition);
-            $result = $this->update($p_arrParams, '1=1 ' . $strWhere);
-
-            if ($result) {
-                $arrData = [
-                    'data' => $p_arrParams,
-                    'condition' => $arrCondition
-                ];
-                $instanceJob = new \My\Job\JobContent();
-                $instanceJob->addJob(SEARCH_PREFIX . 'multiEditContent', $arrData);
-            }
-            return $result;
-        } catch (\Exception $exc) {
+        } catch (\Zend\Http\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
                 echo '<pre>';
                 print_r($exc->getMessage());
@@ -199,34 +159,19 @@ class storageContent extends AbstractTableGateway
 
     private function _buildWhere($arrCondition)
     {
+
         $strWhere = '';
 
-        if (!empty($arrCondition['cont_slug'])) {
-            $strWhere .= " AND cont_slug='" . $arrCondition['cont_slug'] . "'";
+        if (isset($arrCondition['id'])) {
+            $strWhere .= " AND id=" . $arrCondition['id'];
         }
 
-        if (!empty($arrCondition['cont_id'])) {
+        if (isset($arrCondition['cont_id'])) {
             $strWhere .= " AND cont_id=" . $arrCondition['cont_id'];
         }
 
-        if (!empty($arrCondition['cont_title'])) {
-            $strWhere .= " AND cont_title=" . $arrCondition['cont_title'];
-        }
-
-        if (!empty($arrCondition['cont_status'])) {
-            $strWhere .= " AND cont_status =" . $arrCondition['cont_status'];
-        }
-
-        if (!empty($arrCondition['cate_id'])) {
-            $strWhere .= " AND cate_id=" . $arrCondition['cate_id'];
-        }
-
-        if (!empty($arrCondition['not_cont_id'])) {
-            $strWhere .= " AND cont_id !=" . $arrCondition['not_cont_id'];
-        }
-
-        if (!empty($arrCondition['in_cont_id'])) {
-            $strWhere .= " AND cont_id IN (" . $arrCondition['in_cont_id'] . ")";
+        if (!empty($arrCondition['created_date'])) {
+            $strWhere .= " AND created_date = '" . $arrCondition['created_date'] . "'";
         }
 
         return $strWhere;

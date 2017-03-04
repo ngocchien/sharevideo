@@ -787,4 +787,13 @@ class General
             return str_pad($minutes, 2, '0', STR_PAD_LEFT) . ':' . str_pad($seconds, 2, '0', STR_PAD_LEFT);
     }
 
+    public static function bot_detected()
+    {
+        if (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/bot|crawl|slurp|spider/i', $_SERVER['HTTP_USER_AGENT'])) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
 }

@@ -11,7 +11,18 @@ class ConsoleController extends MyController
 {
 
     protected static $_arr_worker = [
-        'content', 'logs', 'category', 'user', 'general', 'keyword', 'group', 'permission', 'crawler', 'tag', 'admin-process'
+        'content',
+        'logs',
+        'category',
+        'user',
+        'general',
+        'keyword',
+        'group',
+        'permission',
+        'crawler',
+        'tag',
+        'admin-process',
+        'content-view'
     ];
 
     public function __construct()
@@ -77,6 +88,9 @@ class ConsoleController extends MyController
             case 'tag' :
                 $this->__migrateTag($intIsCreateIndex);
                 break;
+            case 'content-view' :
+                $this->__migrateContentView($intIsCreateIndex);
+                break;
             case 'all-table' :
                 $instanceSearch = new \My\Search\Logs();
                 $instanceSearch->createIndex();
@@ -96,10 +110,65 @@ class ConsoleController extends MyController
                 $instanceSearch->createIndex();
                 $instanceSearch = new \My\Search\Tag();
                 $instanceSearch->createIndex();
+                $instanceSearch = new \My\Search\ContentView();
+                $instanceSearch->createIndex();
                 break;
         }
         echo General::getColoredString("Index ES sucess", 'light_cyan', 'yellow');
         return true;
+    }
+
+    public function __migrateContentView($intIsCreateIndex)
+    {
+        $service = $this->serviceLocator->get('My\Models\ContentView');
+        $intLimit = 1000;
+        $instanceSearch = new \My\Search\ContentView();
+//        $instanceSearch->createIndex();
+//        die();
+
+        for ($intPage = 1; $intPage < 10000; $intPage++) {
+            $arrList = $service->getListLimit([], $intPage, $intLimit, 'id ASC');
+
+            if (empty($arrList)) {
+                break;
+            }
+
+            if ($intPage == 1) {
+                if ($intIsCreateIndex) {
+                    $instanceSearch->createIndex();
+                } else {
+                    $result = $instanceSearch->removeAllDoc();
+                    if (empty($result)) {
+                        $this->flush();
+                        return General::getColoredString("Cannot delete old search index \n", 'light_cyan', 'red');
+                    }
+                }
+            }
+            $arrDocument = [];
+            foreach ($arrList as $arr) {
+                $id = (int)$arr['id'];
+                $arrDocument[] = new \Elastica\Document($id, $arr);
+                echo General::getColoredString("Created new document with id = " . $id . " Successfully", 'cyan');
+
+                $this->flush();
+            }
+            echo '<pre>';
+            print_r($arrDocument);
+            echo '</pre>';
+            die();
+
+            unset($arrList); //release memory
+            echo General::getColoredString("Migrating " . count($arrDocument) . " documents, please wait...", 'yellow');
+            $this->flush();
+
+            $instanceSearch->add($arrDocument);
+            echo General::getColoredString("Migrated " . count($arrDocument) . " documents successfully", 'blue', 'cyan');
+
+            unset($arrDocument);
+            $this->flush();
+        }
+
+        die('done');
     }
 
     public function __migrateTag($intIsCreateIndex)
@@ -587,6 +656,7 @@ class ConsoleController extends MyController
         }
 
         $arr_worker = self::$_arr_worker;
+
         if (in_array(trim($params['stop']), $arr_worker)) {
             if ($params['type'] || $params['background']) {
                 return General::getColoredString("Invalid params \n", 'light_cyan', 'red');
@@ -818,23 +888,25 @@ class ConsoleController extends MyController
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
                 break;
 
-            case WORKER_PREFIX . '-crawler':
+            case WORKER_PREFIX . '-content-view':
                 //start job group in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-crawler >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-content-view >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-crawler in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-content-view in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-crawler is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "-content-view is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'crawlerYoutube';
-                $methodHandler1 = '\My\Job\JobCrawler::crawlerYoutube';
+                $funcName1 = SEARCH_PREFIX . 'writeContentView';
+                $methodHandler1 = '\My\Job\JobContentView::writeContentView';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
+                $funcName2 = SEARCH_PREFIX . 'editContentView';
+                $methodHandler2 = '\My\Job\JobContentView::editContentView';
+                $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
                 break;
-
             default:
                 return General::getColoredString("Invalid or not found function \n", 'light_cyan', 'red');
         }

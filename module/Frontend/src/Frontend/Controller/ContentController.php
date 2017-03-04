@@ -7,12 +7,6 @@ use My\Controller\MyController,
 
 class ContentController extends MyController
 {
-    /* @var $serviceCategory \My\Models\Category */
-    /* @var $serviceProduct \My\Models\Product */
-    /* @var $serviceProperties \My\Models\Properties */
-    /* @var $serviceDistrict \My\Models\District */
-    /* @var $serviceComment \My\Models\Comment */
-
     public function __construct()
     {
 
@@ -43,17 +37,20 @@ class ContentController extends MyController
                 return $this->redirect()->toRoute('view-content', ['contentSlug' => $arrContent['cont_slug'], 'contentId' => $cont_id]);
             }
 
-            //update số lần view
-            $arrParamsJob = [
-                'object_name' => 'content',
-                'object_id' => $cont_id,
-                'data' => [
-                    'cont_views' => $arrContent['cont_views'] + 1,
-                    'modified_date' => time()
-                ]
-            ];
-            $instanceJob = new \My\Job\JobAdminProcess();
-            $instanceJob->addJob(SEARCH_PREFIX . 'updateDataDB', $arrParamsJob);
+            if (General::bot_detected()) {
+                //update số lần view
+                $arrParamsJob = [
+                    'object_name' => 'content',
+                    'object_id' => $cont_id,
+                    'is_update_view' => true,
+                    'data' => [
+                        'cont_views' => $arrContent['cont_views'] + 1,
+                        'modified_date' => time()
+                    ]
+                ];
+                $instanceJob = new \My\Job\JobAdminProcess();
+                $instanceJob->addJob(SEARCH_PREFIX . 'updateDataDB', $arrParamsJob);
+            }
 
             /*
              render meta
@@ -150,6 +147,7 @@ class ContentController extends MyController
                 ]
             );
 
+
             //lấy 10 keyword :)
             $instanceSearchKeyword = new \My\Search\Keyword();
             $arrKeywordList = $instanceSearchKeyword->getListLimit(
@@ -172,7 +170,7 @@ class ContentController extends MyController
                 $instanceSearchTag = new \My\Search\Tag();
                 $arrTagList = $instanceSearchTag->getList(
                     [
-                        'in_tag_id' => explode(',', $arrContent['tag_id']),
+                        'in_tag_id' => array_filter(explode(',', $arrContent['tag_id'])),
                         'tag_status' => 1
                     ],
                     [],
@@ -210,6 +208,70 @@ class ContentController extends MyController
             }
             return $this->redirect()->toRoute('404', array());
         }
+    }
+
+    public function downloadAction()
+    {
+        try {
+            $params = array_merge($this->params()->fromRoute(), $this->params()->fromQuery());
+
+            if (empty($params['post_id'])) {
+                return $this->getResponse()->setContent(json_encode(array('st' => -1, 'ms' => '<center>Params input inValid! Please try again!</center>')));
+            }
+            $cont_id = (int)$params['post_id'];
+            //get info video
+            $instanceSearchContent = new \My\Search\Content();
+            $videoInfo = $instanceSearchContent->getDetail(
+                [
+                    'cont_id' => $cont_id
+                ],
+                [
+                    'cont_id',
+                    'from_source'
+                ]
+            );
+
+            if (empty($videoInfo)) {
+                return $this->getResponse()->setContent(json_encode(array('st' => -1, 'ms' => '<center>Find not found video in System! Please try again!</center>')));
+            }
+
+            //get info video
+            $url = 'http://www.youtube.com/get_video_info?&video_id=' . $videoInfo['from_source'] . '&asv=3&el=detailpage&hl=en_US';
+            $rp = General::crawler($url);
+            $thumbnail_url = $title = $url_encoded_fmt_stream_map = $type = $url = '';
+            parse_str($rp);
+            $my_formats_array = explode(',', $url_encoded_fmt_stream_map);
+
+            if (empty($url_encoded_fmt_stream_map)) {
+                return $this->getResponse()->setContent(json_encode(array('st' => -1, 'ms' => '<center>Find not Source video! I am sorry!</center>')));
+            }
+
+            $avail_formats[] = '';
+            $j = 0;
+            $ipbits = $ip = $itag = $sig = $quality = '';
+            $expire = time();
+            foreach ($my_formats_array as $format) {
+                parse_str($format);
+                $avail_formats[$j]['itag'] = $itag;
+                $avail_formats[$j]['quality'] = $quality;
+                $type = explode(';', $type);
+                $avail_formats[$j]['type'] = $type[0];
+                $avail_formats[$j]['url'] = urldecode($url) . '&signature=' . $sig;
+                parse_str(urldecode($url));
+                $avail_formats[$j]['expires'] = date("G:i:s T", $expire);
+                $avail_formats[$j]['ipbits'] = $ipbits;
+                $avail_formats[$j]['ip'] = $ip;
+                $j++;
+            }
+            echo '<pre>';
+            print_r($avail_formats);
+            echo '</pre>';
+            die();
+
+        } catch (\Exception $exc) {
+
+        }
+
     }
 
 }

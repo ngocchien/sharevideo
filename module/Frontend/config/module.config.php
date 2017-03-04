@@ -300,6 +300,22 @@ return array(
                     ),
                 ),
             ),
+            'download-video' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/download-video[.html]',
+                    'constraints' => array(
+                        'controller' => 'content',
+                        'action' => 'download'
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Frontend\Controller',
+                        'module' => 'frontend',
+                        'controller' => 'content',
+                        'action' => 'download'
+                    ),
+                ),
+            ),
         ),
     ),
     'module_layouts' => array(

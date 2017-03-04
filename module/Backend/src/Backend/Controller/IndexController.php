@@ -77,6 +77,49 @@ class IndexController extends MyController
 
     public function indexAction()
     {
+
+        $instanceSearch = new \My\Search\ContentView();
+
+
+        $condition = [
+            'created_date' => '2017-03-02'
+        ];
+        $arr = $instanceSearch->getContentTopDay($condition);
+        echo '<pre>';
+        print_r($arr);
+        echo '</pre>';
+        die();
+
+        $condition = [
+            'created_date_gte' => '2017-02-05',
+            'created_date_lte' => '2017-03-03'
+        ];
+        $arr = $instanceSearch->getContentTopWeek($condition);
+        echo '<pre>';
+        print_r($arr);
+        echo '</pre>';
+        die();
+//        $condition = [
+//            'created_date' => date('Y-m-d')
+//        ];
+
+        $condition = [
+            'content_top_week' => true
+        ];
+        $arrData = $instanceSearch->getListLimit(
+            $condition,
+            1,
+            15,
+            [
+                'view' => ['order' => 'desc'],
+                'cont_id' => ['order' => 'desc'],
+            ]
+        );
+        echo '<pre>';
+        print_r($arrData);
+        echo '</pre>';
+        die();
+//        z_
 //        $arr_list_channel = include WEB_ROOT. '/data/list-channel.php';
 //        echo '<pre>';
 //        print_r($arr_list_channel);
@@ -94,7 +137,7 @@ class IndexController extends MyController
         die();
         $arrTag = Array('Mashable', 'The WaterCooler', 'trailer mix', 'trailer', 'bill murray', 'trailer mix mashable', 'mashable watercooler', 'motion picture', 'dumb', 'and', 'dumber', 'dumb and dumber', 'drama', 'academy awards', 'oscars', 'dramatic', 'remix', 'trailer mix show', 'dumb and dumber trailer', 'jim carrey', 'jeff daniels', 'pretty bird', 'dumb and dumber trailer edit', 'dumb and dumber 2', 'dumb and dumber most annoying sound in the world', 'dumb and dumber toilet scene', 'dumb and dumber full movie');
 //        $arrTag = Array('Mashable', 'The WaterCooler');
-        $serviceTag= $this->serviceLocator->get('My\Models\Tags');
+        $serviceTag = $this->serviceLocator->get('My\Models\Tags');
         $instanceSearchTag = new \My\Search\Tag();
 
         foreach ($arrTag as $tag) {
