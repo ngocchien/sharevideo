@@ -1685,10 +1685,7 @@ class ConsoleController extends MyController
     public function videosYoutubeNewAction()
     {
         $params = $this->request->getParams();
-        echo '<pre>';
-        print_r($params);
-        echo '</pre>';
-        die();
+        
         $pid = $params['pid'];
 
         $file_success = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Success';
