@@ -1904,7 +1904,7 @@ class ConsoleController extends MyController
 
             file_put_contents($path_file_name, serialize($arr_channel_cate));
 
-            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube');
+            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube-new');
 
             return true;
         } catch (\Exception $exc) {
