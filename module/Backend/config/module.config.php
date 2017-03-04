@@ -168,7 +168,7 @@ return array(
                         'defaults' => array(
                             '__NAMESPACE__' => 'Backend\Controller',
                             'controller' => 'console',
-                            'action' => 'videos-youtube-new'
+                            'action' => 'videos-youtube-new [--pid=]'
                         ),
                     ),
                 ),

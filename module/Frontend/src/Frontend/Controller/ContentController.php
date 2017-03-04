@@ -263,13 +263,21 @@ class ContentController extends MyController
                 $avail_formats[$j]['ip'] = $ip;
                 $j++;
             }
-            echo '<pre>';
-            print_r($avail_formats);
-            echo '</pre>';
-            die();
+
+            if (empty($avail_formats)) {
+                return $this->getResponse()->setContent(json_encode(array('st' => -1, 'ms' => '<center>Find not Source video! I am sorry!</center>')));
+            }
+
+            return $this->getResponse()->setContent(json_encode(array('st' => 1, 'data' => json_encode($avail_formats))));
 
         } catch (\Exception $exc) {
-
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMessage());
+                echo '</pre>';
+                die();
+            }
+            return $this->getResponse()->setContent(json_encode(array('st' => -1, 'ms' => '<center>Find not Source video! I am sorry!</center>')));
         }
 
     }

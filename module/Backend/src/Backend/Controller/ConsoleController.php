@@ -1684,10 +1684,17 @@ class ConsoleController extends MyController
 
     public function videosYoutubeNewAction()
     {
+        $params = $this->request->getParams();
+        $pid = $params['pid'];
+
         $file_success = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Success';
         $file_error = __CLASS__ . '_' . __FUNCTION__ . '_' . 'Error';
         $path_file_name = WEB_ROOT . '/data/channel-continue.txt';
         try {
+            if (!empty($pid)) {
+                shell_exec('kill -9 ' . $pid);
+            }
+            
             if (file_exists($path_file_name)) {
                 $arr_channel_cate = file_get_contents($path_file_name);
                 $arr_channel_cate = unserialize($arr_channel_cate);
@@ -1904,7 +1911,9 @@ class ConsoleController extends MyController
 
             file_put_contents($path_file_name, serialize($arr_channel_cate));
 
-            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube-new');
+            exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
+
+            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . $PID);
 
             return true;
         } catch (\Exception $exc) {
