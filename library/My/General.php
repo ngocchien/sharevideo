@@ -14,7 +14,7 @@ class General
     const KEYWORD_DEFAULT = 'Sharevideoclip.com, share videos clip, video clip, video hot, clip hot, general video clip, good clip, good video,funny video, funny clip, video music, video film, sport video, football video, gaming video';
     const DESCRIPTION_DEFAULT = 'Sharevideoclip.com - Share hot videos, funny videos, movie music, top videos youtube, top social videos';
     const SITE_IMAGES_DEFAULT = 'http://static.sharevideoclip.com/fe/images/img-intro-1200x630.jpg';
-    const SITE_SOCIAL = 'https://www.facebook.com/khampha.tech/';
+    const SITE_SOCIAL = 'https://www.facebook.com/Share-Video-Community-616628808543081/';
     const SITE_LOCATION = "";
     const MEMBER = 5;
     const ADMINISTRATOR = 2;
@@ -35,9 +35,9 @@ class General
 
     const SEND_MAIL_MESSAGES = 1;
     //define social url
-    const SOCIAL_FACEBOOK_URL = 'https://www.facebook.com/khampha.tech/';
-    const SOCIAL_GOOGLE_PLUS_URL = 'https://www.facebook.com/khampha.tech/';
-    const SOCIAL_TWITTER_URL = 'https://www.facebook.com/khampha.tech/';
+    const SOCIAL_FACEBOOK_URL = 'https://www.facebook.com/Share-Video-Community-616628808543081/';
+    const SOCIAL_GOOGLE_PLUS_URL = 'https://www.facebook.com/Share-Video-Community-616628808543081/';
+    const SOCIAL_TWITTER_URL = 'https://www.facebook.com/Share-Video-Community-616628808543081/';
 
     static $foreground_colors = array(
         'black' => '0;30', 'dark_gray' => '1;30',
@@ -59,7 +59,7 @@ class General
     static $config_fb = array(
         'appId' => '1295525083828424',
         'secret' => '4cf1d6344a439929cff02521bfa553a0',
-        'fb_id' => 158207711302448,
+        'fb_id' => 616628808543081,
 //        'access_token' => 'EAAJTaWjIMUkBAPzPyrhRFR85wEM6BRAxZCgaiwwkvuuZCRDTdoUvlusOj0a1KOZB4xJ6ZBMtig6F8TMQ8VWhXG6W8pGwZBUhyR6vB0Bp9P5wyIpnlfsF90XoXtXEqkHRlEZC8NdF2xEXHysoOZACEhAcv62Ei4nMxAZD'
     );
 

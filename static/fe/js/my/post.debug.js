@@ -79,30 +79,6 @@
             $(window).scrollTop(0);
         });
     };
-
-    ViewPage.reportVideo = function(id, reason) {
-        var request = $.ajax({
-            url: FeelStatic.baseURL + 'notify/sendReport',
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                id: id,
-                reason: reason
-            },
-            statusCode: {
-                403: Main.showCaptchaInput
-            }
-        });
-
-        request.done(function(data) {
-            if (data.error_message) {
-                Main.notification(data.error_message);
-                return;
-            }
-            Main.notification('Thật vi diệu chân thành cám ơn đóng góp của bạn nhé!');
-        });
-    };
-
     ViewPage.addVideo = function () {
         var lastScrollTop = -100;
 
@@ -133,98 +109,6 @@
                 ViewPage.renderPosts(ViewPage.videoList);
             }
         });
-    };
-
-    ViewPage.renderPostDetails = function(post, vid, idx) {
-        var postId = vid.id,
-            idContainer = 'video-container-' + postId + '-' + idx,
-            sourceList = null;//listVideo[idx].source_list
-
-        post.find('.header').removeClass('require-warning-confirm');
-        post.find('#video-container').append($(document.createElement('div')).attr('id', idContainer));
-
-        var shareQuick = post.find('.header .line-style.line-end .social');
-        shareQuick.find('.short-link, .facebook, .google, .twitter').attr('data-title', vid.title);
-        shareQuick.find('.short-link, .facebook, .google, .twitter')
-            .attr('data-seo_id', vid.seo_id)
-            .attr('data-short-link', vid.short_link);
-
-        post.find('.header .line-style.line-end .btn-report').attr('data-text', postId);
-
-        shareQuick.removeClass('active');
-
-        post.find('.show-notification').hide();
-
-        post.find('.content > .title').text(vid.title);
-
-        var author = post.find('.content .info .author');
-        author.find('.avt').css('background-image', 'url(' + vid.moderator.avatar + ')');
-        author.find('.user .username').text(vid.moderator.name);
-        author.find('.user .created .time').text(vid.fantastic_time);
-        author.find('a').prop('href', vid.moderator.profile_url);
-
-        post.find('.content .info .view .number').text(vid.format_views);
-
-        var like = post.find('.content .score-container .like');
-        like.attr('data-text', vid.id).attr('id', 'like-' + vid.id);
-
-        post.find('.cmt-form').attr('data-text', vid.id);
-
-
-        var likeBtn = like.find('.btn-like');
-        var dislikeBtn = like.find('.btn-dislike');
-
-        likeBtn.find('.number').text(vid.format_likes);
-        dislikeBtn.find('.number').text(vid.format_dislikes);
-
-        if (vid.is_like) {
-            likeBtn.addClass('active');
-        } else {
-            likeBtn.removeClass('active');
-            dislikeBtn.removeClass('active');
-        }
-
-        var content = post.find('.content'),
-            hot = content.find('.score-container .hot');
-        if (vid.score > 0) {
-            hot.find('img.red').removeClass('hide');
-            hot.find('img.gray').addClass('hide');
-            hot.find('p').removeClass('hide');
-            hot.find('p .score').text(vid.score);
-        } else {
-            hot.find('img.red').addClass('hide');
-            hot.find('img.gray').removeClass('hide');
-            hot.find('p').addClass('hide');
-            hot.find('p .score').text(0);
-        }
-
-        content.find('.readMore-container .description-container .description').text(vid.description);
-
-        var share = content.find('.readMore-container .share .social');
-        share.find('.facebook, .google, .twitter').attr('data-title', vid.title);
-        share.find('.facebook, .google, .twitter')
-            .attr('data-seo_id', vid.seo_id)
-            .attr('data-short-link', vid.short_link);
-
-        var elementTags = content.find('.tags ul'),
-            listTags = vid.categories,
-            defaultTag = $('<li><a></a></li>');
-        elementTags.text('');
-
-        for (var i = 0; i < listTags.length; i++) {
-            var tag = defaultTag.clone();
-            tag.find('a').attr('href', FeelStatic.baseURL + 'tag/' + listTags[i].tag);
-            tag.find('a').text(listTags[i].name);
-            tag.appendTo(elementTags);
-        }
-
-        content.find('.readMore-container').addClass('hide')
-            .find('.cmt-container').html('');
-        content.find('.gradient').show()
-            .find('.btn-readMore').attr('data-post_id', postId)
-            .attr('data-load-comment', 'true');
-
-        return idContainer;
     };
 
     ViewPage.renderPosts = function (listVideo) {
@@ -368,30 +252,6 @@
         })();
     };
 
-    ViewPage.showVoucher = function() {
-        return; //stop voucher event
-        if (ViewPage.invalidToShowVoucher()) {
-            return;
-        }
-
-        var mainContent	= $('#view-page .container .main-content');
-        $('#referal-container').appendTo(mainContent).show();
-        Main.hasShownVoucher = true;
-    };
-
-    ViewPage.invalidToShowVoucher = function() {
-        return !Main.isLoggedIn() || Main.hasShownVoucher || ViewPage.getVoucherNumber() || ViewPage.getNumberOfViewedVideos() < 2 || ViewPage.hasIgnoredVoucher();
-    };
-
-    ViewPage.getVoucherNumber = function() {
-        var voucherNo = FeelStatic.getCookie('feel_voucher');
-        if (voucherNo) {
-            return voucherNo;
-        }
-
-        return false;
-    };
-
     ViewPage.increaseViewedNumber = function() {
         var num = FeelStatic.getCookie('feel_viewed_videos');
         if (!num) {
@@ -407,56 +267,6 @@
             return 0;
         }
         return parseInt(num);
-    };
-
-    ViewPage.requestVoucher = function(button) {
-        if (ViewPage.isGettingVoucher || ViewPage.getVoucherNumber()) {
-            return;
-        }
-        ViewPage.isGettingVoucher = true;
-        button = $(button);
-        button.prop('disabled', true);
-        button.html('Đang tải...');
-
-        var request = $.ajax({
-            url: FeelStatic.baseURL + 'post/getVoucher',
-            dataType: 'json'
-        });
-
-        request.done(function(data) {
-            if (data.error_message) {
-                Main.notification(data.error_message);
-            } else {
-                Main.notification('<p>Chúc mừng bạn đã nhận được 1 voucher</p><h1 style="font-size: 2em;">' + data.voucher + '</h1>', 400);
-            }
-            ViewPage.isGettingVoucher = false;
-            button.prop('disabled', false);
-            button.html('Nhận voucher');
-            $('#referal-container').fadeOut(300);
-        });
-    };
-
-    ViewPage.ignoreVoucher = function(button) {
-        if (ViewPage.isGettingVoucher) {
-            return;
-        }
-
-        $('#referal-container').fadeOut(300);
-        FeelStatic.setCookie('feel_voucher_ignore', true, 7);
-    };
-
-    ViewPage.hasIgnoredVoucher = function() {
-        return FeelStatic.getCookie('feel_voucher_ignore');
-    };
-
-    ViewPage.viewVoucherDetail = function() {
-        var html = '';
-        html += '<p>Tặng 1 ly Heineken miễn phí trị giá 75000đ<p>';
-        html += '<p>Tại <b>Saigon Acoustic - 104 Hai Bà Trưng, Q1, HCM</b><p>';
-        html += '<p>Áp dụng trước ngày <b>31/12/2016</b><p>';
-        html += '<p>Thời gian mở cửa <b>6pm - 11:30pm từ Thứ 4 - Chủ nhật</b><p>';
-
-        Main.notification(html, 500);
     };
 
     ViewPage.getVideo = function (callback) {
