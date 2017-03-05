@@ -1914,9 +1914,10 @@ class ConsoleController extends MyController
 
             exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
 
-            shell_exec('php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . current($PID));
-
-            return true;
+            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+//            return;
+//
+//            return true;
         } catch (\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
                 echo '<pre>';

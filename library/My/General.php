@@ -13,7 +13,7 @@ class General
     const SITE_HOTLINE = '(+84) 97 353 1618';
     const KEYWORD_DEFAULT = 'Sharevideoclip.com, share videos clip, video clip, video hot, clip hot, general video clip, good clip, good video,funny video, funny clip, video music, video film, sport video, football video, gaming video';
     const DESCRIPTION_DEFAULT = 'Sharevideoclip.com - Share hot videos, funny videos, movie music, top videos youtube, top social videos';
-    const SITE_IMAGES_DEFAULT = 'http://static.khampha.tech/f/v1/images/home.png';
+    const SITE_IMAGES_DEFAULT = 'http://static.sharevideoclip.com/fe/images/img-intro-1200x630.jpg';
     const SITE_SOCIAL = 'https://www.facebook.com/khampha.tech/';
     const SITE_LOCATION = "";
     const MEMBER = 5;
@@ -57,8 +57,8 @@ class General
     );
 
     static $config_fb = array(
-        'appId' => '267543780301950',
-        'secret' => 'de8f42407ac02e7efa747ea6148b3dda',
+        'appId' => '1295525083828424',
+        'secret' => '4cf1d6344a439929cff02521bfa553a0',
         'fb_id' => 158207711302448,
 //        'access_token' => 'EAAJTaWjIMUkBAPzPyrhRFR85wEM6BRAxZCgaiwwkvuuZCRDTdoUvlusOj0a1KOZB4xJ6ZBMtig6F8TMQ8VWhXG6W8pGwZBUhyR6vB0Bp9P5wyIpnlfsF90XoXtXEqkHRlEZC8NdF2xEXHysoOZACEhAcv62Ei4nMxAZD'
     );
@@ -635,21 +635,21 @@ class General
         $current = time() - $date;
 
         if ($current < 60) {
-            return $current . " giây trước";
+            return $current . " second ago";
         } else {
             $minute = round($current / 60);
             if ($minute < 60) {
-                return $minute . " phút trước";
+                return $minute . " minutes ago";
             } else {
                 $house = round($minute / 60);
                 if ($house < 24) {
-                    return $house . " giờ trước";
+                    return $house . " hour ago";
                 } else {
                     $day = round($house / 24);
-                    if ($day < 8) {
-                        return $day . " Ngày trước";
+                    if ($day < 2) {
+                        return $day . " days ago " . date("H:i", $date);
                     } else {
-                        return date("d/m/Y", $date);
+                        return date("d/m/Y H:i", $date);
                     }
                 }
             }

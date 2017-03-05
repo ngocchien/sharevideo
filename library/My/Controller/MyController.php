@@ -62,7 +62,8 @@ class MyController extends AbstractActionController
                 ->appendName('viewport', html_entity_decode('width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes'))
                 ->appendName('author', html_entity_decode(\My\General::SITE_AUTH))
                 ->appendName('robots', html_entity_decode('index, follow'))
-                ->appendName('theme-color', html_entity_decode('#007cdb'));
+                ->appendName('theme-color', html_entity_decode('#007cdb'))
+                ->setProperty('og:site_name', 'Share video clip');
             $this->renderer
                 ->headLink(array('rel' => 'shortcut ', 'href' => STATIC_URL . '/images/favicon.png'))
                 ->headLink(array('rel' => 'icon ', 'sizes' => '192x192', 'href' => STATIC_URL . '/images/favicon-192x192.png'));
@@ -80,12 +81,15 @@ class MyController extends AbstractActionController
                         ->appendName('keywords', \My\General::KEYWORD_DEFAULT)
                         ->appendName('description', \My\General::DESCRIPTION_DEFAULT)
                         ->appendName('image', \My\General::SITE_IMAGES_DEFAULT)
-                        ->setProperty('og:image', \My\General::SITE_IMAGES_DEFAULT);
+                        ->setProperty('og:image', \My\General::SITE_IMAGES_DEFAULT)
+                        ->setProperty('og:image:height', '1200')
+                        ->setProperty('og:image:width', '630');
                     $this->renderer
                         ->headLink(array('rel' => 'image_src', 'href' => \My\General::SITE_IMAGES_DEFAULT))
                         ->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL))
                         ->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL));
                     break;
+
                 default:
                     break;
             }

@@ -155,9 +155,9 @@ class Paging extends AbstractHelper
                 $intPage = ($intCurrentPage > 2) ? ($intCurrentPage == $intTotalPage && $intTotalPage > 4) ? $intCurrentPage - 4 : $intCurrentPage - 2 : 1;
                 $intLimitPage = ($intTotalPage < 6) ? $intTotalPage : $intCurrentPage + 2;
                 $arrCondition['page'] = 1;
-                $result .= '<li><a class="prev page-numbers" href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '"><< đầu</a></li>';
+                $result .= '<li><a class="prev page-numbers" href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '"><< First</a></li>';
                 $arrCondition['page'] = $intCurrentPage - 1;
-                $result .= '<li class="PagedList-skipToPrevious"><a rel="prev" href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '">trước</a></li>';
+                $result .= '<li class="PagedList-skipToPrevious"><a rel="prev" href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '">prev</a></li>';
 
             }
             for ($intPage; $intPage <= $intTotalPage && $intPage <= $intLimitPage; $intPage++) {
@@ -172,9 +172,9 @@ class Paging extends AbstractHelper
                 $result .= '';
             } else {
                 $arrCondition['page'] = $intCurrentPage + 1;
-                $result .= '<li class="PagedList-skipToNext"><a href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '">sau</a></li>';
+                $result .= '<li class="PagedList-skipToNext"><a href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '">next</a></li>';
                 $arrCondition['page'] = $intTotalPage;
-                $result .= '<li><a class="next page-numbers" href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '">cuối >></a></li>';
+                $result .= '<li><a class="next page-numbers" href="' . $serverUrl . $urlHelper($strRoute, $arrCondition) . '">Last >></a></li>';
             }
 
             $result .= '</ul></div>';
