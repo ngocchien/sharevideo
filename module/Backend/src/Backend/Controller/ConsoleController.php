@@ -1940,7 +1940,7 @@ class ConsoleController extends MyController
                 shell_exec('kill -9 ' . $pid);
             }
 
-            $path_file_name = WEB_ROOT . '/html/logs/key-tag.txt';
+            $path_file_name = WEB_ROOT . '/logs/key-tag.txt';
 
             $begin_tag_id = 1;
             if (file_exists($path_file_name)) {

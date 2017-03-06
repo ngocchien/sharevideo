@@ -254,6 +254,12 @@ class Tag extends SearchAbstract
             $boolQuery->addMust($addQuery);
         }
 
+        if (isset($params['gte_tag_id'])) {
+            $addQuery = new ESQuery\Range();
+            $addQuery->addField('tag_id', array('gte' => $params['gte_tag_id']));
+            $boolQuery->addMust($addQuery);
+        }
+
         if (!empty($params['not_tag_status'])) {
             $addQuery = new ESQuery\Term();
             $addQuery->setTerm('tag_status', $params['not_tag_status']);
