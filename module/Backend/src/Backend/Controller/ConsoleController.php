@@ -1933,84 +1933,89 @@ class ConsoleController extends MyController
 
     public function updateKeywordAction()
     {
-        $this->__updateKW();
-    }
-
-    public function __updateKW()
-    {
-        $file = '/var/www/khampha/html/logs/updateKW.txt';
         try {
-            $instanceSearch = new \My\Search\Keyword();
-            for ($i = 1; $i < 100000; $i++) {
-                $arrKeyword = $instanceSearch->getListLimit(
-                    [
-                        'key_id_greater' => 1970
-                    ],
-                    $i,
-                    50,
-                    [
-                        'key_id' => [
-                            'order' => 'asc'
-                        ]
-                    ],
-                    [
-                        'key_id',
-                        'key_name',
-                        'key_description'
-                    ]
-                );
-
-                echo General::getColoredString("PAGE {$i}", 'blue', 'cyan');
-
-                if (empty($arrKeyword)) {
-                    echo General::getColoredString("UPDATE KEYWORD SUCCESS", 'blue', 'cyan');
-                    return true;
-                }
-
-                foreach ($arrKeyword as $arr) {
-                    if (empty($arr['key_id']) || !empty($arr['key_description'])) {
-                        continue;
-                    }
-
-                    //search vào gg
-                    //https://www.google.com.vn/search?q=chien+nguyen&rlz=1C1CHBF_enVN720VN720&oq=chien+nguyen&aqs=chrome.0.69i59l2j0l4.5779j0j4&sourceid=chrome&ie=UTF-8
-                    //https://www.google.com.vn/webhp?sourceid=chrome-instant&rlz=1C1CHBF_enVN720VN720&ion=1&espv=2&ie=UTF-8#q=nguy%E1%BB%85n%20ng%E1%BB%8Dc%20chi%E1%BA%BFn
-                    //$url_gg = 'https://www.google.com.vn/webhp?sourceid=chrome-instant&rlz=1C1CHBF_enVN720VN720&ion=1&espv=2&ie=UTF-8#q='.rawurlencode($arr['key_name']);
-                    $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=212&espv=2&q=' . rawurlencode($arr['key_name']) . '&oq=' . rawurlencode($arr['key_name']);
-
-                    $gg_rp = General::crawler($url_gg);
-                    $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
-                    $key_description = '';
-                    foreach ($gg_rp_dom->find('.srg .st') as $item) {
-                        empty($key_description) ?
-                            $key_description .= '<p><strong>' . strip_tags($item->outertext) . '</strong></p>' :
-                            $key_description .= '<p>' . strip_tags($item->outertext) . '</p>';
-                    }
-
-                    $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
-                    $rs = $serviceKeyword->edit(['key_description' => $key_description], $arr['key_id']);
-                    if ($rs) {
-                        file_put_contents($file, $arr['key_id'] . PHP_EOL, FILE_APPEND);
-                        echo \My\General::getColoredString("UPDATE KEY ID =  " . $arr['key_id'] . " SUCCESS \n", 'green');
-                    } else {
-                        file_put_contents($file, 'ERROR ID = ' . $arr['key_id'] . PHP_EOL, FILE_APPEND);
-
-                        echo \My\General::getColoredString("UPDATE KEY ID =  " . $arr['key_id'] . " ERROR \n", 'red');
-                        continue;
-                    }
-                    unset($serviceKeyword, $gg_rp, $gg_rp_dom, $key_description, $id, $url_gg);
-                    $this->flush();
-
-                    //random sleep
-                    sleep(rand(4, 10));
-                }
-                $this->flush();
-                unset($arrKeyword);
+            $params = $this->request->getParams();
+            $pid = $params['pid'];
+            if (!empty($pid)) {
+                shell_exec('kill -9 ' . $pid);
             }
 
-            return true;
+            $path_file_name = WEB_ROOT . '/html/logs/key-tag.txt';
+
+            $begin_tag_id = 1;
+            if (!file_exists($path_file_name)) {
+                $begin_tag_id = file_get_contents($path_file_name);
+            }
+
+            //get list tag
+            $instanceSearchTag = new \My\Search\Tag();
+            $arrTagList = $instanceSearchTag->getListLimit(
+                [
+                    'gte_tag_id' => $begin_tag_id,
+                    'tag_status' => 1
+                ],
+                1,
+                50,
+                [
+                    'tag_id' => ['order' => 'asc']
+                ]
+            );
+
+            if (empty($arrTagList)) {
+                return true;
+            }
+
+            unset($instanceSearchTag);
+
+            $instanceSearchKeyWord = new \My\Search\Keyword();
+
+            $end_tag_id = '';
+            foreach ($arrTagList as $tag) {
+                $end_tag_id = $tag['tag_id'];
+                $is_exits = $instanceSearchKeyWord->getDetail(['key_slug' => $tag['tag_slug']]);
+
+                if ($is_exits) {
+                    echo \My\General::getColoredString("exist {$tag['tag_name']}", 'red') . '\n';
+                    continue;
+                }
+
+                sleep(rand(4, 10));
+                $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($tag['tag_name']) . '&oq=' . rawurlencode($tag['tag_name']);
+
+                $gg_rp = General::crawler($url_gg);
+                $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
+                $key_description = '';
+                foreach ($gg_rp_dom->find('.srg .st') as $item) {
+                    empty($key_description) ?
+                        $key_description .= '<p><strong>' . strip_tags($item->outertext) . '</strong></p>' :
+                        $key_description .= '<p>' . strip_tags($item->outertext) . '</p>';
+                }
+
+                $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
+                $id_key = $serviceKeyword->add([
+                    'key_name' => $tag['tag_name'],
+                    'key_slug' => $tag['tag_slug'],
+                    'is_crawler' => 0,
+                    'created_date' => time(),
+                    'key_description' => $key_description
+                ]);
+                if ($id_key) {
+                    echo \My\General::getColoredString("Insert to tbl_keyword success key_name =  {$tag['tag_name']} \n", 'green');
+                } else {
+                    echo \My\General::getColoredString("Insert to tbl_keyword ERROR key_name =  {$tag['tag_name']} \n", 'red');
+                }
+                unset($serviceKeyword, $gg_rp, $gg_rp_dom, $key_description, $id);
+                $this->flush();
+            }
+            $end_tag_id += 1;
+            file_put_contents($path_file_name, $end_tag_id);
+
+            exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
+
+            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-key --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+
         } catch (\Exception $exc) {
-            file_put_contents($file, $exc->getCode() . ' => ' . $exc->getMessage() . PHP_EOL, FILE_APPEND);
+            return false;
         }
     }
 

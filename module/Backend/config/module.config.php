@@ -174,7 +174,7 @@ return array(
                 ),
                 'update-keyword' => array(
                     'options' => array(
-                        'route' => 'update-keyword',
+                        'route' => 'update-keyword [--pid=]',
                         'defaults' => array(
                             '__NAMESPACE__' => 'Backend\Controller',
                             'controller' => 'console',
