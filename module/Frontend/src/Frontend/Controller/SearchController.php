@@ -30,7 +30,10 @@ class SearchController extends MyController
                 $arr_condition_content,
                 $intPage,
                 $intLimit,
-                ['_score' => ['order' => 'desc']],
+                [
+                    '_score' => ['order' => 'desc'],
+                    'cont_id' => ['order' => 'desc']
+                ],
                 [
                     'cont_title',
                     'cont_slug',

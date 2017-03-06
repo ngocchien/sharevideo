@@ -1,4 +1,3 @@
-
 $('.view-more .btn-view').on('click', function () {
     $(this).hide();
     $('#loading-container .loading').show();

@@ -282,24 +282,6 @@ return array(
                     ),
                 ),
             ),
-            'sitemap' => array(
-                'type' => 'Segment',
-                'options' => array(
-                    'route' => '/sitemap[[/:action][/:page].html]',
-                    'constraints' => array(
-                        'controller' => 'sitemap',
-                        'action' => '[a-zA-Z0-9_-]*',
-                        'page' => '[0-9]+',
-                    ),
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Frontend\Controller',
-                        'module' => 'frontend',
-                        'controller' => 'sitemap',
-                        'action' => 'index',
-                        'page' => 1
-                    ),
-                ),
-            ),
             'download-video' => array(
                 'type' => 'Segment',
                 'options' => array(
