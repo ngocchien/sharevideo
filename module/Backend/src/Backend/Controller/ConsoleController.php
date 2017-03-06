@@ -2010,9 +2010,9 @@ class ConsoleController extends MyController
             $end_tag_id += 1;
             file_put_contents($path_file_name, $end_tag_id);
 
-            exec("ps -ef | grep -v grep | grep update-key | awk '{ print $2 }'", $PID);
+            exec("ps -ef | grep -v grep | grep update-keyword | awk '{ print $2 }'", $PID);
 
-            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-key --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-keyword --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
 
         } catch (\Exception $exc) {
             return false;
