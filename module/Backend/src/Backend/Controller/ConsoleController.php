@@ -1943,7 +1943,7 @@ class ConsoleController extends MyController
             $path_file_name = WEB_ROOT . '/html/logs/key-tag.txt';
 
             $begin_tag_id = 1;
-            if (!file_exists($path_file_name)) {
+            if (file_exists($path_file_name)) {
                 $begin_tag_id = file_get_contents($path_file_name);
             }
 
@@ -2010,7 +2010,7 @@ class ConsoleController extends MyController
             $end_tag_id += 1;
             file_put_contents($path_file_name, $end_tag_id);
 
-            exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
+            exec("ps -ef | grep -v grep | grep update-key | awk '{ print $2 }'", $PID);
 
             return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-key --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
 
