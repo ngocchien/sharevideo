@@ -12,17 +12,23 @@ $arr_key_id = array_keys($this->arrKeywordList);
             <div class="inside-container">
                 <div class="inside">
                     <h4 class="name">
-                        <a>List Post In Kwyword</a>
+                        <a>List Post in Keyword</a>
                         <span></span>
                     </h4>
                     <div class="videos">
                         <?php foreach ($this->arrContentList as $key => $arr_content):
-                            $key_temp = $key * 2;
+                            $key_temp = $key * 3;
                             $cont_image = json_decode($arr_content['cont_image'], true);
-                            ?>
+                            if ($key == 1):?>
+                                <div class="description-container" style="margin-top: 15px">
+                                    <p class="description">
+                                        <?php echo $this->arrKeyDetail['key_description']; ?>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
                             <div class="post">
                                 <div class="poster"
-                                     style="background-image: url(<?php echo UPLOAD_URL.$cont_image['320x180']; ?>)">
+                                     style="background-image: url(<?php echo UPLOAD_URL . $cont_image['320x180']; ?>)">
                                     <div class="bg-gradient"></div>
                                     <p class="duration">00:54</p>
                                     <p class="view"><span
