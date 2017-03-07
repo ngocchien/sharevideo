@@ -1290,20 +1290,33 @@ class ConsoleController extends MyController
             if ($isexist) {
                 continue;
             }
-            $arr_data = [
-                'key_name' => $name,
-                'key_slug' => trim(General::getSlug($name)),
-                'created_date' => time(),
-                'is_crawler' => 0
-            ];
-            $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
-            $int_result = $serviceKeyword->add($arr_data);
-            unset($serviceKeyword);
-            if ($int_result) {
-                echo General::getColoredString("add keyword : {$name} success id : {$int_result} ", 'green');
-            } else {
-                echo General::getColoredString("add keyword : {$name} error", 'red');
+
+            sleep(rand(4, 10));
+            $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($name) . '&oq=' . rawurlencode($val);
+
+            $gg_rp = General::crawler($url_gg);
+            $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
+            $key_description = '';
+            foreach ($gg_rp_dom->find('.srg .st') as $item) {
+                empty($key_description) ?
+                    $key_description .= '<p><strong>' . strip_tags($item->outertext) . '</strong></p>' :
+                    $key_description .= '<p>' . strip_tags($item->outertext) . '</p>';
             }
+
+            $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
+            $id_key = $serviceKeyword->add([
+                'key_name' => $name,
+                'key_slug' => General::getSlug($name),
+                'is_crawler' => 0,
+                'created_date' => time(),
+                'key_description' => $key_description
+            ]);
+            if ($id_key) {
+                echo \My\General::getColoredString("Insert to tbl_keyword success key_name =  {$name} \n", 'green');
+            } else {
+                echo \My\General::getColoredString("Insert to tbl_keyword ERROR key_name =  {$name} \n", 'red');
+            }
+            unset($serviceKeyword, $gg_rp, $gg_rp_dom, $key_description, $id_key);
             $this->flush();
         }
         echo General::getColoredString("add keyword complete", 'yellow', 'cyan');
@@ -1370,9 +1383,6 @@ class ConsoleController extends MyController
                         }
                         unset($serviceKeyword, $gg_rp, $gg_rp_dom, $key_description, $id);
                         $this->flush();
-
-                        //random sleep
-//                        sleep(rand(4, 10));
                     }
                     $this->flush();
                 }
@@ -1387,20 +1397,25 @@ class ConsoleController extends MyController
     {
         $current_date = date('Y-m-d');
         $instanceSearchKeyWord = new \My\Search\Keyword();
-        for ($i = 0; $i <= 10; $i++) {
+        for ($i = 10; $i >= 0; $i--) {
             $date = strtotime('-' . $i . ' days', strtotime($current_date));
             $date = date('Ymd', $date);
             echo \My\General::getColoredString("Date = {$date}", 'cyan');
-//            $href = 'https://www.google.com/trends/hottrends/hotItems?ajax=1&pn=p28&htd=' . $date . '&htv=l';
             $href = 'https://trends.google.com/trends/hotvideos/hotItems?hvd=&geo=US&mob=0&=htd' . $date . '&hvsm=l';
-//            https://trends.google.com/trends/hotvideos/hotItems
-//            hvd:
-//            geo:US || GB
-//            mob:0
-//            hvsm:1
-
+            echo '<pre>';
+            print_r($href);
+            echo '</pre>';
+            die();
             $responseCurl = General::crawler($href);
+            echo '<pre>';
+            print_r($responseCurl);
+            echo '</pre>';
+            die();
             $arrData = json_decode($responseCurl, true);
+            echo '<pre>';
+            print_r($arrData);
+            echo '</pre>';
+            die();
 
             foreach ($arrData['trendsByDateList'] as $data) {
                 foreach ($data['trendsList'] as $data1) {
@@ -1914,9 +1929,6 @@ class ConsoleController extends MyController
             exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
 
             return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
-//            return;
-//
-//            return true;
         } catch (\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
                 echo '<pre>';
