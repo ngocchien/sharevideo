@@ -961,15 +961,76 @@ class ConsoleController extends MyController
 
     public function crawlerKeywordAction()
     {
-        $this->getKeyword();
-        return;
+        $params = $this->request->getParams();
+        $pid = $params['pid'];
+        if (!empty($pid)) {
+            shell_exec('kill -9 ' . $pid);
+        }
+
+        $instanceSearchKeyWord = new \My\Search\Keyword();
+        $arr_keyword = $instanceSearchKeyWord->getListLimit(['is_crawler' => 0], 1, 1, ['key_id' => ['order' => 'asc']]);
+
+        if (empty($arr_keyword)) {
+            return;
+        }
+
+        $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
+        $serviceKeyword->edit(['is_crawler' => 1, 'updated_date' => time()], $arr_keyword['key_id']);
+
+        $keyword = $arr_keyword['key_name'];
+        $url = 'http://www.google.com/complete/search?output=search&client=chrome&q=' . rawurlencode($keyword) . '&hl=en&gl=us';
+        $resp = General::crawler($url);
+        $arr_resp = json_decode($resp, true)[1];
+
+        exec("ps -ef | grep -v grep | grep crawlerkeyword | awk '{ print $2 }'", $PID);
+
+        if (empty($arr_resp)) {
+            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php crawlerkeyword --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+        }
+
+        foreach ($arr_resp as $key) {
+            $is_exits = $instanceSearchKeyWord->getDetail(['key_slug' => General::getSlug($key)]);
+
+            if ($is_exits) {
+                echo \My\General::getColoredString("exist {$key}", 'red') . '\n';
+                continue;
+            }
+
+            sleep(rand(4, 10));
+            $url_gg = 'https://www.google.com/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode(General::getSlug($key)) . '&oq=' . rawurlencode($tag['tag_name']);
+
+            $gg_rp = General::crawler($url_gg);
+            $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
+            $key_description = '';
+            foreach ($gg_rp_dom->find('.srg .st') as $item) {
+                empty($key_description) ?
+                    $key_description .= '<p><strong>' . strip_tags($item->outertext) . '</strong></p>' :
+                    $key_description .= '<p>' . strip_tags($item->outertext) . '</p>';
+            }
+
+            $id_key = $serviceKeyword->add([
+                'key_name' => $key,
+                'key_slug' => General::getSlug($key),
+                'is_crawler' => 0,
+                'created_date' => time(),
+                'key_description' => $key_description
+            ]);
+
+            if ($id_key) {
+                echo \My\General::getColoredString("Insert to tbl_keyword success key_name =  {$key} \n", 'green');
+            } else {
+                echo \My\General::getColoredString("Insert to tbl_keyword ERROR key_name =  {$key} \n", 'red');
+            }
+            unset($gg_rp, $gg_rp_dom, $key_description, $id_key);
+            $this->flush();
+        }
+        unset($instanceSearchKeyWord);
+
+        return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php crawlerkeyword --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
     }
 
     public function getKeyword()
     {
-        $match = [
-            '', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-        ];
         $instanceSearchKeyWord = new \My\Search\Keyword();
         $arr_keyword = current($instanceSearchKeyWord->getListLimit(['is_crawler' => 0], 1, 1, ['key_id' => ['order' => 'asc']]));
 
@@ -1992,7 +2053,7 @@ class ConsoleController extends MyController
                 }
 
                 sleep(rand(4, 10));
-                $url_gg = 'https://www.google.com.vn/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($tag['tag_name']) . '&oq=' . rawurlencode($tag['tag_name']);
+                $url_gg = 'https://www.google.com/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($tag['tag_name']) . '&oq=' . rawurlencode($tag['tag_name']);
 
                 $gg_rp = General::crawler($url_gg);
                 $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);

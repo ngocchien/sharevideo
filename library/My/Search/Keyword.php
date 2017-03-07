@@ -136,6 +136,7 @@ class Keyword extends SearchAbstract
             $query->setFrom($intFrom)
                 ->setSize($intLimit)
                 ->setSort($sort);
+
             $query->setQuery($boolQuery);
             if ($arrFields && is_array($arrFields)) {
                 $query->setSource($arrFields);
