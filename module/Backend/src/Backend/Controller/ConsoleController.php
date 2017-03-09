@@ -1124,7 +1124,7 @@ class ConsoleController extends MyController
         foreach ($all_file as $file_name) {
             if (strpos($file_name, 'xml') !== false) {
                 $sitemap = $xml->addChild('sitemap', '');
-                $sitemap->addChild('loc', BASE_URL . '/maps/' . $file_name);
+                $sitemap->addChild('loc', General::SITE_DOMAIN_FULL . '/maps/' . $file_name);
             }
         }
 
