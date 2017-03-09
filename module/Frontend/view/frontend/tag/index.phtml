@@ -1,3 +1,6 @@
+<?php
+$arr_key_id = array_keys($this->arrKeywordList);
+?>
 <div id="tag-page">
     <div class="search-value">
         <h1>
@@ -13,14 +16,15 @@
                         <span></span>
                     </h4>
                     <div class="videos">
-                        <?php foreach ($this->arrContentList as $arr_content):
+                        <?php foreach ($this->arrContentList as $key => $arr_content):
+                            $key_temp = $key * 3;
                             $cont_image = json_decode($arr_content['cont_image'], true);
                             ?>
                             <div class="post">
                                 <div class="poster"
                                      style="background-image: url(<?php echo UPLOAD_URL . $cont_image['320x180']; ?>)">
                                     <div class="bg-gradient"></div>
-                                    <p class="duration">00:54</p>
+                                    <p class="duration"><?php echo $arr_content['cont_duration']; ?></p>
                                     <p class="view"><span
                                             class="number"><?php echo number_format($arr_content['cont_views']); ?></span>
                                         views</p>
@@ -38,7 +42,28 @@
                                     <p class="description">
                                         <?php echo $arr_content['cont_description']; ?>
                                     </p>
-                                    <p class="created"><span class="time"><?php echo \My\General::formatDateString($arr_content['created_date']) ?></span>
+                                    <?php if (in_array($key_temp, $arr_key_id)): ?>
+                                        <div class="tags">
+                                            <ul>
+                                                <li>
+                                                    <a href="<?php echo $this->serverUrl() . $this->Url('keyword', array('keySlug' => $this->arrKeywordList[$key_temp]['key_slug'], 'keyId' => $this->arrKeywordList[$key_temp]['key_id'])) ?>"
+                                                       title="<?php echo $this->arrKeywordList[$key_temp]['key_name']; ?>">
+                                                        <?php echo $this->arrKeywordList[$key_temp]['key_name']; ?>
+                                                    </a>
+                                                </li>
+                                                <?php if (in_array($key_temp + 1, $arr_key_id)): ?>
+                                                    <li>
+                                                        <a href="<?php echo $this->serverUrl() . $this->Url('keyword', array('keySlug' => $this->arrKeywordList[$key_temp + 1]['key_slug'], 'keyId' => $this->arrKeywordList[$key_temp + 1]['key_id'])) ?>"
+                                                           title="<?php echo $this->arrKeywordList[$key_temp + 1]['key_name']; ?>">
+                                                            <?php echo $this->arrKeywordList[$key_temp + 1]['key_name']; ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    <?php endif; ?>
+                                    <p class="created"><span
+                                            class="time"><?php echo \My\General::formatDateString($arr_content['created_date']) ?></span>
                                     </p>
                                 </div>
                             </div>

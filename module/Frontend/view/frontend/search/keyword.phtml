@@ -12,12 +12,12 @@ $arr_key_id = array_keys($this->arrKeywordList);
             <div class="inside-container">
                 <div class="inside">
                     <h4 class="name">
-                        <a>List Post in Keyword</a>
+                        <a>List Post</a>
                         <span></span>
                     </h4>
                     <div class="videos">
                         <?php foreach ($this->arrContentList as $key => $arr_content):
-                            $key_temp = $key * 3;
+                            $key_temp = $key * 2;
                             $cont_image = json_decode($arr_content['cont_image'], true);
                             if ($key == 1):?>
                                 <div class="description-container" style="margin-top: 15px">
@@ -30,7 +30,7 @@ $arr_key_id = array_keys($this->arrKeywordList);
                                 <div class="poster"
                                      style="background-image: url(<?php echo UPLOAD_URL . $cont_image['320x180']; ?>)">
                                     <div class="bg-gradient"></div>
-                                    <p class="duration">00:54</p>
+                                    <p class="duration"><?php echo $arr_content['cont_duration']; ?></p>
                                     <p class="view"><span
                                             class="number"><?php echo number_format($arr_content['cont_views']); ?></span>
                                         views</p>
@@ -81,7 +81,29 @@ $arr_key_id = array_keys($this->arrKeywordList);
             </div>
         </div>
     </div>
-    <?php
-    echo $this->paging
-    ?>
 </div>
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "<?php echo $this->serverUrl() . $this->Url('keyword', ['keySlug' => $this->arrKeyDetail['key_slug'], 'keyId' => $this->arrKeyDetail['key_id']]); ?>"
+        },
+        "headline": "<?php echo $this->arrKeyDetail['key_name']; ?>",
+        "datePublished": "<?php echo date('Y/m/d', $this->arrKeyDetail['created_date']); ?>",
+        "dateModified": "<?php echo date('Y/m/d', $this->arrKeyDetail['created_date']); ?>",
+        "author": {
+            "@type": "Person",
+            "name": "<?php echo \My\General::SITE_AUTH; ?>"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "<?php echo $this->arrKeyDetail['key_name']; ?>"
+        },
+        "description": "<?php echo $this->arrKeyDetail['key_description']; ?>"
+    }
+
+
+
+</script>

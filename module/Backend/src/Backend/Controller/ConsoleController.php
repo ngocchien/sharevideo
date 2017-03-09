@@ -9,7 +9,6 @@ use My\General,
 
 class ConsoleController extends MyController
 {
-    protected static $_start_date = '2017-03-07';
 
     protected static $_arr_worker = [
         'content',
@@ -969,7 +968,7 @@ class ConsoleController extends MyController
         }
 
         $instanceSearchKeyWord = new \My\Search\Keyword();
-        $arr_keyword = $instanceSearchKeyWord->getListLimit(['is_crawler' => 0], 1, 1, ['key_id' => ['order' => 'asc']]);
+        $arr_keyword = current($instanceSearchKeyWord->getListLimit(['is_crawler' => 0], 1, 1, ['key_id' => ['order' => 'asc']]));
 
         if (empty($arr_keyword)) {
             return;
@@ -998,7 +997,7 @@ class ConsoleController extends MyController
             }
 
             sleep(rand(4, 10));
-            $url_gg = 'https://www.google.com/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode(General::getSlug($key)) . '&oq=' . rawurlencode($tag['tag_name']);
+            $url_gg = 'https://www.google.com/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode(General::getSlug($key)) . '&oq=' . rawurlencode(General::getSlug($key));
 
             $gg_rp = General::crawler($url_gg);
             $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
@@ -1027,7 +1026,7 @@ class ConsoleController extends MyController
         }
         unset($instanceSearchKeyWord);
 
-        return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php crawlerkeyword --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+        return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php crawlerkeyword --pid=' . current($PID) . ' >/dev/null');
     }
 
     public function getKeyword()
@@ -1113,7 +1112,6 @@ class ConsoleController extends MyController
         $this->siteMapCategory();
         $this->siteMapContent();
         $this->siteMapSearch();
-        $this->siteMapTag();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></sitemapindex>';
         $xml = new \SimpleXMLElement($xml);
@@ -1145,13 +1143,35 @@ class ConsoleController extends MyController
         $xml = new \SimpleXMLElement($doc);
         $this->flush();
         $instanceSearchCategory = new \My\Search\Category();
-        $arrCategoryList = $instanceSearchCategory->getList(['cate_status' => 1], [], ['cate_id' => ['order' => 'asc']]);
+        $arrCategoryList = $instanceSearchCategory->getList(['cate_status' => 1], [], ['cate_sort' => ['order' => 'asc'], 'cate_id' => ['order' => 'asc']]);
 
-        foreach ($arrCategoryList as $value) {
+        $arrCategoryParentList = [];
+        $arrCategoryByParent = [];
+        if (!empty($arrCategoryList)) {
+            foreach ($arrCategoryList as $arrCategory) {
+                if ($arrCategory['parent_id'] == 0) {
+                    $arrCategoryParentList[$arrCategory['cate_id']] = $arrCategory;
+                } else {
+                    $arrCategoryByParent[$arrCategory['parent_id']][] = $arrCategory;
+                }
+            }
+        }
+
+        ksort($arrCategoryByParent);
+
+        foreach ($arrCategoryParentList as $value) {
             $strCategoryURL = BASE_URL . '/cate/' . $value['cate_slug'] . '-' . $value['cate_id'] . '.html';
             $url = $xml->addChild('url');
             $url->addChild('loc', $strCategoryURL);
             $url->addChild('changefreq', 'daily');
+        }
+        foreach ($arrCategoryByParent as $key => $arr) {
+            foreach ($arr as $value) {
+                $strCategoryURL = BASE_URL . '/cate/' . $value['cate_slug'] . '-' . $value['cate_id'] . '.html';
+                $url = $xml->addChild('url');
+                $url->addChild('loc', $strCategoryURL);
+                $url->addChild('changefreq', 'daily');
+            }
         }
 
         unlink(PUBLIC_PATH . '/maps/category.xml');
@@ -1161,7 +1181,6 @@ class ConsoleController extends MyController
             $this->flush();
         }
 
-        $this->flush();
         return true;
     }
 
@@ -1169,27 +1188,10 @@ class ConsoleController extends MyController
     {
         $instanceSearchContent = new \My\Search\Content();
         $intLimit = 4000;
-
-        $start_date = date_create(self::$_start_date);
-        $current_date = date_create(date('Y-m-d'));
-        $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 2000;
-
         for ($intPage = 1; $intPage < 10000; $intPage++) {
+
             $file = PUBLIC_PATH . '/maps/post-' . $intPage . '.xml';
-            $arrContentList = $instanceSearchContent->getListLimit(
-                [
-                    'not_cont_status' => -1,
-                    'lte_cont_id' => $lte_id
-                ],
-                $intPage,
-                $intLimit,
-                ['cont_id' => ['order' => 'desc']],
-                [
-                    'cont_id',
-                    'cont_slug'
-                ]
-            );
+            $arrContentList = $instanceSearchContent->getListLimit(['not_cont_status' => -1], $intPage, $intLimit, ['cont_id' => ['order' => 'desc']]);
 
             if (empty($arrContentList)) {
                 break;
@@ -1215,6 +1217,7 @@ class ConsoleController extends MyController
                 echo General::getColoredString("Site map complete content page {$intPage}", 'yellow', 'cyan');
                 $this->flush();
             }
+
         }
 
         return true;
@@ -1224,26 +1227,9 @@ class ConsoleController extends MyController
     {
         $instanceSearchKeyword = new \My\Search\Keyword();
         $intLimit = 4000;
-        $start_date = date_create(self::$_start_date);
-        $current_date = date_create(date('Y-m-d'));
-        $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 1000;
-
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/keyword-' . $intPage . '.xml';
-            $arrKeyList = $instanceSearchKeyword->getListLimit(
-                [
-                    'full' => 1,
-                    'lte_key_id' => $lte_id
-                ],
-                $intPage,
-                $intLimit,
-                ['key_id' => ['order' => 'desc']],
-                [
-                    'key_id',
-                    'key_slug'
-                ]
-            );
+            $arrKeyList = $instanceSearchKeyword->getListLimit(['full' => 1], $intPage, $intLimit, ['key_id' => ['order' => 'desc']]);
 
             if (empty($arrKeyList)) {
                 break;
@@ -1269,61 +1255,6 @@ class ConsoleController extends MyController
                 echo General::getColoredString("Site map complete keyword page {$intPage}", 'yellow', 'cyan');
                 $this->flush();
             }
-            $this->flush();
-        }
-        return true;
-    }
-
-    public function siteMapTag()
-    {
-        $instanceSearch = new \My\Search\Tag();
-        $intLimit = 4000;
-        $start_date = date_create(self::$_start_date);
-        $current_date = date_create(date('Y-m-d'));
-        $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 3000;
-
-        for ($intPage = 1; $intPage < 10000; $intPage++) {
-            $file = PUBLIC_PATH . '/maps/tag-' . $intPage . '.xml';
-            $arrTag = $instanceSearch->getListLimit(
-                [
-                    'full' => 1,
-                    'lte_tag_id' => $lte_id
-                ],
-                $intPage,
-                $intLimit,
-                ['tag_id' => ['order' => 'desc']],
-                [
-                    'tag_id',
-                    'tag_slug'
-                ]
-            );
-
-            if (empty($arrTag)) {
-                break;
-            }
-
-            $doc = '<?xml version="1.0" encoding="UTF-8"?>';
-            $doc .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-            $doc .= '</urlset>';
-            $xml = new \SimpleXMLElement($doc);
-            $this->flush();
-
-            foreach ($arrTag as $arr) {
-                $href = BASE_URL . '/tag/' . $arr['tag_slug'] . '-' . $arr['tag_id'] . '.html';
-                $url = $xml->addChild('url');
-                $url->addChild('loc', $href);
-                $url->addChild('changefreq', 'daily');
-            }
-
-            unlink($file);
-            $result = file_put_contents($file, $xml->asXML());
-
-            if ($result) {
-                echo General::getColoredString("Site map complete tag page {$intPage}", 'yellow', 'cyan');
-                $this->flush();
-            }
-            $this->flush();
         }
         return true;
     }
@@ -2110,29 +2041,32 @@ class ConsoleController extends MyController
             unset($instanceSearchTag);
 
             $instanceSearchKeyWord = new \My\Search\Keyword();
-
-            $end_tag_id = '';
+            $end_tag_id = $arrTagList[49]['tag_id']+1;
             foreach ($arrTagList as $tag) {
-                $end_tag_id = $tag['tag_id'];
                 $is_exits = $instanceSearchKeyWord->getDetail(['key_slug' => $tag['tag_slug']]);
 
                 if ($is_exits) {
-                    echo \My\General::getColoredString("exist {$tag['tag_name']}", 'red') . '\n';
                     continue;
                 }
 
-                sleep(rand(4, 10));
                 $url_gg = 'https://www.google.com/search?sclient=psy-ab&biw=1366&bih=315&espv=2&q=' . rawurlencode($tag['tag_name']) . '&oq=' . rawurlencode($tag['tag_name']);
 
                 $gg_rp = General::crawler($url_gg);
-                $gg_rp_dom = HtmlDomParser::str_get_html($gg_rp);
-                $key_description = '';
-                foreach ($gg_rp_dom->find('.srg .st') as $item) {
-                    empty($key_description) ?
-                        $key_description .= '<p><strong>' . strip_tags($item->outertext) . '</strong></p>' :
-                        $key_description .= '<p>' . strip_tags($item->outertext) . '</p>';
+                $gg_rp_dom = new Query($gg_rp);
+                $results = $gg_rp_dom->execute('.st');
+                if (!count($results)) {
+                    continue;
                 }
 
+                $key_description = '';
+
+                foreach ($results as $item) {
+                    empty($key_description) ?
+                        $key_description .= '<p><strong>' . strip_tags($item->textContent) . '</strong></p>' :
+                        $key_description .= '<p>' . strip_tags($item->textContent) . '</p>';
+                }
+
+                sleep(rand(4, 10));
                 $serviceKeyword = $this->serviceLocator->get('My\Models\Keyword');
                 $id_key = $serviceKeyword->add([
                     'key_name' => $tag['tag_name'],
@@ -2142,19 +2076,21 @@ class ConsoleController extends MyController
                     'key_description' => $key_description
                 ]);
                 if ($id_key) {
-                    echo \My\General::getColoredString("Insert to tbl_keyword success key_name =  {$tag['tag_name']} \n", 'green');
+                    echo \My\General::getColoredString("Insert to tbl_keyword success key_name =  {$tag['tag_name']} ", 'green');
                 } else {
-                    echo \My\General::getColoredString("Insert to tbl_keyword ERROR key_name =  {$tag['tag_name']} \n", 'red');
+                    echo \My\General::getColoredString("Insert to tbl_keyword ERROR key_name =  {$tag['tag_name']} ", 'red');
                 }
                 unset($serviceKeyword, $gg_rp, $gg_rp_dom, $key_description, $id);
                 $this->flush();
             }
-            $end_tag_id += 1;
+
             file_put_contents($path_file_name, $end_tag_id);
+
+            unset($arrTagList);
 
             exec("ps -ef | grep -v grep | grep update-keyword | awk '{ print $2 }'", $PID);
 
-            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-keyword --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-keyword --pid=' . current($PID) . ' >/dev/null');
 
         } catch (\Exception $exc) {
             return false;

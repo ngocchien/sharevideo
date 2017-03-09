@@ -128,32 +128,31 @@ class SearchController extends MyController
                 ['full_text_title' => $arrKeyDetail['key_name']],
                 $intPage,
                 $intLimit,
-                ['_score' => ['order' => 'desc']],
+                [
+                    '_score' => ['order' => 'desc'],
+                    'cont_id' => ['order' => 'desc']
+                ],
                 [
                     'cont_title',
                     'cont_slug',
-                    'cont_main_image',
                     'cont_description',
                     'cont_id',
-                    'cate_id',
                     'cont_image',
-                    'created_date'
+                    'created_date',
+                    'cont_duration'
                 ]
             );
-            $intTotal = $instanceSearchContent->getTotal(['full_text_title' => $arrKeyDetail['key_name']]);
-            $helper = $this->serviceLocator->get('viewhelpermanager')->get('Paging');
-            $paging = $helper($params['module'], $params['__CONTROLLER__'], $params['action'], $intTotal, $intPage, $intLimit, 'keyword', $params);
 
             $this->renderer = $this->serviceLocator->get('Zend\View\Renderer\PhpRenderer');
 
-            $this->renderer->headTitle(html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
+            $this->renderer->headTitle(html_entity_decode($arrKeyDetail['key_name']));
             $this->renderer->headMeta()->setProperty('url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id'], 'page' => $intPage)));
             $this->renderer->headMeta()->appendName('og:url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id'], 'page' => $intPage)));
-            $this->renderer->headMeta()->appendName('title', html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
-            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
-            $this->renderer->headMeta()->appendName('keywords', html_entity_decode($arrKeyDetail['key_name']) . General::TITLE_META);
-            $this->renderer->headMeta()->appendName('description', html_entity_decode('List post in keyword : ' . $arrKeyDetail['key_name']) . General::TITLE_META);
-            $this->renderer->headMeta()->setProperty('og:description', html_entity_decode('List post in keyword : ' . $arrKeyDetail['key_name']) . General::TITLE_META);
+            $this->renderer->headMeta()->appendName('title', html_entity_decode($arrKeyDetail['key_name']));
+            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode($arrKeyDetail['key_name']));
+            $this->renderer->headMeta()->appendName('keywords', html_entity_decode($arrKeyDetail['key_name']));
+            $this->renderer->headMeta()->appendName('description', html_entity_decode($arrKeyDetail['key_description']) ?: 'List post in keyword : ' . $arrKeyDetail['key_name']);
+            $this->renderer->headMeta()->setProperty('og:description', html_entity_decode($arrKeyDetail['key_description']) ?: 'List post in keyword : ' . $arrKeyDetail['key_name']);
 
             $this->renderer->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id']))));
             $this->renderer->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('keyword', array('keySlug' => $arrKeyDetail['key_slug'], 'keyId' => $arrKeyDetail['key_id']))));
@@ -176,11 +175,7 @@ class SearchController extends MyController
             );
 
             return array(
-                'params' => $params,
                 'arrKeywordList' => $arrKeywordList,
-                'paging' => $paging,
-                'intPage' => $intPage,
-                'intTotal' => $intTotal,
                 'arrContentList' => $arrContentList,
                 'arrKeyDetail' => $arrKeyDetail
             );
