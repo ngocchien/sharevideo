@@ -27,10 +27,8 @@ class IndexController extends MyController
                 [
                     'cont_title',
                     'cont_slug',
-                    'cont_main_image',
                     'cont_description',
                     'cont_id',
-                    'cate_id',
                     'cont_image',
                     'cont_views',
                     'cont_duration'
@@ -61,10 +59,7 @@ class IndexController extends MyController
                     [
                         'cont_title',
                         'cont_slug',
-                        'cont_main_image',
-                        'cont_description',
                         'cont_id',
-                        'cate_id',
                         'cont_image',
                         'cont_views',
                         'cont_duration'
@@ -83,11 +78,9 @@ class IndexController extends MyController
                 [
                     'cont_title',
                     'cont_slug',
-                    'cont_description',
                     'cont_id',
                     'cont_image',
-                    'cont_views',
-//                    'cont_duration'
+                    'cont_views'
                 ]
             );
 
