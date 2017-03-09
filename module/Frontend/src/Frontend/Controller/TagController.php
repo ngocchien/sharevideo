@@ -67,11 +67,11 @@ class TagController extends MyController
             $this->renderer->headTitle(html_entity_decode($metaTitle) . General::TITLE_META);
             $this->renderer->headMeta()->setProperty('url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('tag', array('tagSlug' => $tagDetail['tag_slug'], 'tagId' => $tagDetail['tag_id'], 'page' => $intPage)));
             $this->renderer->headMeta()->appendName('og:url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('tag', array('tagSlug' => $tagDetail['tag_slug'], 'tagId' => $tagDetail['tag_id'], 'page' => $intPage)));
-            $this->renderer->headMeta()->appendName('title', html_entity_decode($metaTitle));
-            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode($metaTitle));
+            $this->renderer->headMeta()->appendName('title', html_entity_decode('Tag : ' . $metaTitle));
+            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode('Tag : ' . $metaTitle));
             $this->renderer->headMeta()->appendName('keywords', html_entity_decode($metaKeyword));
-            $this->renderer->headMeta()->appendName('description', html_entity_decode($metaDescription));
-            $this->renderer->headMeta()->setProperty('og:description', html_entity_decode($metaDescription));
+            $this->renderer->headMeta()->appendName('description', html_entity_decode('Tag : ' . $metaDescription));
+            $this->renderer->headMeta()->setProperty('og:description', html_entity_decode('Tag : ' . $metaDescription));
             $this->renderer->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('tag', array('tagSlug' => $tagDetail['tag_slug'], 'tagId' => $tagDetail['tag_id'], 'page' => $intPage))));
             $this->renderer->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('tag', array('tagSlug' => $tagDetail['tag_slug'], 'tagId' => $tagDetail['tag_id'], 'page' => $intPage))));
 
@@ -104,7 +104,7 @@ class TagController extends MyController
                     'key_slug'
                 ]
             );
-            
+
             return array(
                 'params' => $params,
                 'paging' => $paging,
