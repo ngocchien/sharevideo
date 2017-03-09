@@ -9,6 +9,7 @@ use My\General,
 
 class ConsoleController extends MyController
 {
+    protected static $_start_date = '2017-03-07';
 
     protected static $_arr_worker = [
         'content',
@@ -1112,6 +1113,7 @@ class ConsoleController extends MyController
         $this->siteMapCategory();
         $this->siteMapContent();
         $this->siteMapSearch();
+        $this->siteMapTag();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></sitemapindex>';
         $xml = new \SimpleXMLElement($xml);
@@ -1143,35 +1145,13 @@ class ConsoleController extends MyController
         $xml = new \SimpleXMLElement($doc);
         $this->flush();
         $instanceSearchCategory = new \My\Search\Category();
-        $arrCategoryList = $instanceSearchCategory->getList(['cate_status' => 1], [], ['cate_sort' => ['order' => 'asc'], 'cate_id' => ['order' => 'asc']]);
+        $arrCategoryList = $instanceSearchCategory->getList(['cate_status' => 1], [], ['cate_id' => ['order' => 'asc']]);
 
-        $arrCategoryParentList = [];
-        $arrCategoryByParent = [];
-        if (!empty($arrCategoryList)) {
-            foreach ($arrCategoryList as $arrCategory) {
-                if ($arrCategory['parent_id'] == 0) {
-                    $arrCategoryParentList[$arrCategory['cate_id']] = $arrCategory;
-                } else {
-                    $arrCategoryByParent[$arrCategory['parent_id']][] = $arrCategory;
-                }
-            }
-        }
-
-        ksort($arrCategoryByParent);
-
-        foreach ($arrCategoryParentList as $value) {
+        foreach ($arrCategoryList as $value) {
             $strCategoryURL = BASE_URL . '/cate/' . $value['cate_slug'] . '-' . $value['cate_id'] . '.html';
             $url = $xml->addChild('url');
             $url->addChild('loc', $strCategoryURL);
             $url->addChild('changefreq', 'daily');
-        }
-        foreach ($arrCategoryByParent as $key => $arr) {
-            foreach ($arr as $value) {
-                $strCategoryURL = BASE_URL . '/cate/' . $value['cate_slug'] . '-' . $value['cate_id'] . '.html';
-                $url = $xml->addChild('url');
-                $url->addChild('loc', $strCategoryURL);
-                $url->addChild('changefreq', 'daily');
-            }
         }
 
         unlink(PUBLIC_PATH . '/maps/category.xml');
@@ -1181,6 +1161,7 @@ class ConsoleController extends MyController
             $this->flush();
         }
 
+        $this->flush();
         return true;
     }
 
@@ -1188,10 +1169,27 @@ class ConsoleController extends MyController
     {
         $instanceSearchContent = new \My\Search\Content();
         $intLimit = 4000;
-        for ($intPage = 1; $intPage < 10000; $intPage++) {
 
+        $start_date = date_create(self::$_start_date);
+        $current_date = date_create(date('Y-m-d'));
+        $diff = date_diff($start_date, $current_date);
+        $lte_id = $diff->format('%a') * 2000;
+
+        for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/post-' . $intPage . '.xml';
-            $arrContentList = $instanceSearchContent->getListLimit(['not_cont_status' => -1], $intPage, $intLimit, ['cont_id' => ['order' => 'desc']]);
+            $arrContentList = $instanceSearchContent->getListLimit(
+                [
+                    'not_cont_status' => -1,
+                    'lte_cont_id' => $lte_id
+                ],
+                $intPage,
+                $intLimit,
+                ['cont_id' => ['order' => 'desc']],
+                [
+                    'cont_id',
+                    'cont_slug'
+                ]
+            );
 
             if (empty($arrContentList)) {
                 break;
@@ -1217,7 +1215,6 @@ class ConsoleController extends MyController
                 echo General::getColoredString("Site map complete content page {$intPage}", 'yellow', 'cyan');
                 $this->flush();
             }
-
         }
 
         return true;
@@ -1227,9 +1224,26 @@ class ConsoleController extends MyController
     {
         $instanceSearchKeyword = new \My\Search\Keyword();
         $intLimit = 4000;
+        $start_date = date_create(self::$_start_date);
+        $current_date = date_create(date('Y-m-d'));
+        $diff = date_diff($start_date, $current_date);
+        $lte_id = $diff->format('%a') * 1000;
+
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/keyword-' . $intPage . '.xml';
-            $arrKeyList = $instanceSearchKeyword->getListLimit(['full' => 1], $intPage, $intLimit, ['key_id' => ['order' => 'desc']]);
+            $arrKeyList = $instanceSearchKeyword->getListLimit(
+                [
+                    'full' => 1,
+                    'lte_key_id' => $lte_id
+                ],
+                $intPage,
+                $intLimit,
+                ['key_id' => ['order' => 'desc']],
+                [
+                    'key_id',
+                    'key_slug'
+                ]
+            );
 
             if (empty($arrKeyList)) {
                 break;
@@ -1255,6 +1269,61 @@ class ConsoleController extends MyController
                 echo General::getColoredString("Site map complete keyword page {$intPage}", 'yellow', 'cyan');
                 $this->flush();
             }
+            $this->flush();
+        }
+        return true;
+    }
+
+    public function siteMapTag()
+    {
+        $instanceSearch = new \My\Search\Tag();
+        $intLimit = 4000;
+        $start_date = date_create(self::$_start_date);
+        $current_date = date_create(date('Y-m-d'));
+        $diff = date_diff($start_date, $current_date);
+        $lte_id = $diff->format('%a') * 3000;
+
+        for ($intPage = 1; $intPage < 10000; $intPage++) {
+            $file = PUBLIC_PATH . '/maps/tag-' . $intPage . '.xml';
+            $arrTag = $instanceSearch->getListLimit(
+                [
+                    'full' => 1,
+                    'lte_tag_id' => $lte_id
+                ],
+                $intPage,
+                $intLimit,
+                ['tag_id' => ['order' => 'desc']],
+                [
+                    'tag_id',
+                    'tag_slug'
+                ]
+            );
+
+            if (empty($arrTag)) {
+                break;
+            }
+
+            $doc = '<?xml version="1.0" encoding="UTF-8"?>';
+            $doc .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+            $doc .= '</urlset>';
+            $xml = new \SimpleXMLElement($doc);
+            $this->flush();
+
+            foreach ($arrTag as $arr) {
+                $href = BASE_URL . '/tag/' . $arr['tag_slug'] . '-' . $arr['tag_id'] . '.html';
+                $url = $xml->addChild('url');
+                $url->addChild('loc', $href);
+                $url->addChild('changefreq', 'daily');
+            }
+
+            unlink($file);
+            $result = file_put_contents($file, $xml->asXML());
+
+            if ($result) {
+                echo General::getColoredString("Site map complete tag page {$intPage}", 'yellow', 'cyan');
+                $this->flush();
+            }
+            $this->flush();
         }
         return true;
     }

@@ -260,6 +260,12 @@ class Tag extends SearchAbstract
             $boolQuery->addMust($addQuery);
         }
 
+        if (isset($params['lte_tag_id'])) {
+            $addQuery = new ESQuery\Range();
+            $addQuery->addField('tag_id', array('lte' => $params['lte_tag_id']));
+            $boolQuery->addMust($addQuery);
+        }
+
         if (!empty($params['not_tag_status'])) {
             $addQuery = new ESQuery\Term();
             $addQuery->setTerm('tag_status', $params['not_tag_status']);
@@ -282,6 +288,13 @@ class Tag extends SearchAbstract
             $addQuery = new ESQuery\Terms();
             $addQuery->setTerms('tag_slug', $params['in_tag_slug']);
             $boolQuery->addMust($addQuery);
+        }
+
+        if (isset($params['full'])) {
+            $wordNameQueryString = new ESQuery\QueryString();
+            $wordNameQueryString->setDefaultField('tag_name')
+                ->setQuery('*');
+            $boolQuery->addMust($wordNameQueryString);
         }
 
         return $boolQuery;

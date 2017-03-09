@@ -52,7 +52,8 @@ class TagController extends MyController
                     'cont_description',
                     'cont_id',
                     'cont_image',
-                    'tag_id'
+                    'tag_id',
+                    'created_date'
                 ]
             );
 

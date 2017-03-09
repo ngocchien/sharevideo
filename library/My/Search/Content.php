@@ -398,6 +398,12 @@ class Content extends SearchAbstract
             $boolQuery->addMust($addQuery);
         }
 
+        if (isset($params['lte_cont_id'])) {
+            $addQuery = new ESQuery\Range();
+            $addQuery->addField('cont_id', array('lte' => $params['lte_cont_id']));
+            $boolQuery->addMust($addQuery);
+        }
+
         if (isset($params['full_text_title'])) {
             $math = new ESQuery\Match();
             $math->setParam('cont_title', trim($params['full_text_title']));

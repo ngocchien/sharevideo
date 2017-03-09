@@ -8,13 +8,6 @@ use My\General;
 
 class IndexController extends MyController
 {
-    /* @var $serviceCategory \My\Models\Category */
-    /* @var $serviceProduct \My\Models\Product */
-
-    public function __construct()
-    {
-    }
-
     public function indexAction()
     {
         try {

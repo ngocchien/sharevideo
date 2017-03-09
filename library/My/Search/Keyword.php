@@ -267,6 +267,12 @@ class Keyword extends SearchAbstract
             $boolQuery->addMust($addQuery);
         }
 
+        if (isset($params['lte_key_id'])) {
+            $addQuery = new ESQuery\Range();
+            $addQuery->addField('key_id', array('lte' => $params['lte_key_id']));
+            $boolQuery->addMust($addQuery);
+        }
+
         if (isset($params['key_id_greater'])) {
             $addQuery = new ESQuery\Range();
             $addQuery->addField('key_id', array('gt' => $params['key_id_greater']));
