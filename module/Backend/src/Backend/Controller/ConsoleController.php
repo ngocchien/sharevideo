@@ -1148,7 +1148,7 @@ class ConsoleController extends MyController
         $arrCategoryList = $instanceSearchCategory->getList(['cate_status' => 1], [], ['cate_id' => ['order' => 'asc']]);
 
         foreach ($arrCategoryList as $value) {
-            $strCategoryURL = BASE_URL . '/cate/' . $value['cate_slug'] . '-' . $value['cate_id'] . '.html';
+            $strCategoryURL = General::SITE_DOMAIN_FULL . '/cate/' . $value['cate_slug'] . '-' . $value['cate_id'] . '.html';
             $url = $xml->addChild('url');
             $url->addChild('loc', $strCategoryURL);
             $url->addChild('changefreq', 'daily');
@@ -1202,7 +1202,7 @@ class ConsoleController extends MyController
             $this->flush();
 
             foreach ($arrContentList as $arr) {
-                $href = BASE_URL . '/post/' . $arr['cont_slug'] . '-' . $arr['cont_id'] . '.html';
+                $href = General::SITE_DOMAIN_FULL . '/post/' . $arr['cont_slug'] . '-' . $arr['cont_id'] . '.html';
                 $url = $xml->addChild('url');
                 $url->addChild('loc', $href);
                 $url->addChild('changefreq', 'daily');
@@ -1256,7 +1256,7 @@ class ConsoleController extends MyController
             $this->flush();
 
             foreach ($arrKeyList as $arr) {
-                $href = BASE_URL . '/keyword/' . $arr['key_slug'] . '-' . $arr['key_id'] . '.html';
+                $href = General::SITE_DOMAIN_FULL . '/keyword/' . $arr['key_slug'] . '-' . $arr['key_id'] . '.html';
                 $url = $xml->addChild('url');
                 $url->addChild('loc', $href);
                 $url->addChild('changefreq', 'daily');
@@ -1310,7 +1310,7 @@ class ConsoleController extends MyController
             $this->flush();
 
             foreach ($arrTag as $arr) {
-                $href = BASE_URL . '/tag/' . $arr['tag_slug'] . '-' . $arr['tag_id'] . '.html';
+                $href = General::SITE_DOMAIN_FULL . '/tag/' . $arr['tag_slug'] . '-' . $arr['tag_id'] . '.html';
                 $url = $xml->addChild('url');
                 $url->addChild('loc', $href);
                 $url->addChild('changefreq', 'daily');
