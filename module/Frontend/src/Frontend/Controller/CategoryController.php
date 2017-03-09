@@ -50,11 +50,11 @@ class CategoryController extends MyController
                     'cont_title',
                     'cont_slug',
                     'cont_main_image',
-                    'cont_description',
                     'cont_id',
                     'cont_image',
                     'created_date',
-                    'cont_views'
+                    'cont_views',
+                    'cont_duration'
                 ]
             );
 
