@@ -2159,7 +2159,7 @@ class ConsoleController extends MyController
 
             exec("ps -ef | grep -v grep | grep update-keyword | awk '{ print $2 }'", $PID);
 
-            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-keyword --pid=' . current($PID) . ' >/dev/null');
+            return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php update-keyword --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
 
         } catch (\Exception $exc) {
             return false;
