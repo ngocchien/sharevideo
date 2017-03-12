@@ -21,6 +21,7 @@
     ViewPage.minRenderedVidIdx = 0;
 
     ViewPage.init = function () {
+
         $('html, body').animate({scrollTop: 80}, 1000);
 
         if (Main.isMobile.any()) {
