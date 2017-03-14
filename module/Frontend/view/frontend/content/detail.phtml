@@ -11,9 +11,9 @@ $url_video = 'https://www.youtube.com/watch?v=' . $arr_content_detail['from_sour
                     <div class="line-style line-start"></div>
                     <video
                         id="vid1"
-                        class="video-js vjs-default-skin"
+                        class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered"
                         controls
-                        style="height: 550px; width: 100%"
+                        poster="<?php echo $cont_detail_image['640x480'] ?>"
                         data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "<?php echo $url_video; ?>"}], "youtube": { "iv_load_policy": 1 } }'
                     >
                     </video>
@@ -207,4 +207,6 @@ $url_video = 'https://www.youtube.com/watch?v=' . $arr_content_detail['from_sour
         },
         "description": "<?php echo $arr_content_detail['cont_description']; ?>"
     }
+
+
 </script>
