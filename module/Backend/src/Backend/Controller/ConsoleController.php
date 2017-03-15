@@ -1173,7 +1173,7 @@ class ConsoleController extends MyController
         $start_date = date_create(self::$_start_date);
         $current_date = date_create(date('Y-m-d'));
         $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 2000;
+        $lte_id = $diff->format('%a') * 500;
 
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/post-' . $intPage . '.xml';
@@ -1227,7 +1227,7 @@ class ConsoleController extends MyController
         $start_date = date_create(self::$_start_date);
         $current_date = date_create(date('Y-m-d'));
         $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 1000;
+        $lte_id = $diff->format('%a') * 500;
 
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/keyword-' . $intPage . '.xml';
@@ -1281,7 +1281,7 @@ class ConsoleController extends MyController
         $start_date = date_create(self::$_start_date);
         $current_date = date_create(date('Y-m-d'));
         $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 3000;
+        $lte_id = $diff->format('%a') * 1000;
 
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/tag-' . $intPage . '.xml';
