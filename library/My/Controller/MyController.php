@@ -56,6 +56,7 @@ class MyController extends AbstractActionController
     {
         if ($arrData['module'] == 'frontend') {
             //set all page
+//            <link rel="alternate" href="http://sharevideoclip.com" hreflang="en-us" />
             $this->renderer->headMeta()
                 ->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8')
                 ->appendHttpEquiv('content-language', 'en-US')
@@ -66,7 +67,8 @@ class MyController extends AbstractActionController
                 ->setProperty('og:site_name', 'Share video clip');
             $this->renderer
                 ->headLink(array('rel' => 'shortcut ', 'href' => STATIC_URL . '/images/favicon.png'))
-                ->headLink(array('rel' => 'icon ', 'sizes' => '192x192', 'href' => STATIC_URL . '/images/favicon-192x192.png'));
+                ->headLink(array('rel' => 'icon ', 'sizes' => '192x192', 'href' => STATIC_URL . '/images/favicon-192x192.png'))
+                ->headLink(array('rel' => 'alternate ', 'href' => \My\General::SITE_DOMAIN_FULL, 'hreflang' => 'en-us'));
 
             //set 1 page
             switch ($this->resource) {
