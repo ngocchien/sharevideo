@@ -125,7 +125,7 @@ class storageGeneral extends AbstractTableGateway
                 $result = $this->lastInsertValue;
                 $p_arrParams['gene_id'] = $result;
                 $instanceJob = new \My\Job\JobGeneral();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeGeneral', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeGeneral', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -149,7 +149,7 @@ class storageGeneral extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['gene_id'] = $id;
                 $instanceJob = new \My\Job\JobGeneral();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editGeneral', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editGeneral', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -178,7 +178,7 @@ class storageGeneral extends AbstractTableGateway
                     'condition' => $arrCondition
                 ];
                 $instanceJob = new \My\Job\JobContent();
-                $instanceJob->addJob(SEARCH_PREFIX . 'multiEditContent', $arrData);
+                $instanceJob->addJob(WORKER_PREFIX . 'multiEditContent', $arrData);
             }
             return $result;
         } catch (\Exception $exc) {

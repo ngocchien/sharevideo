@@ -118,8 +118,8 @@ class storageContentView extends AbstractTableGateway
             if ($result) {
                 $result = $this->lastInsertValue;
                 $p_arrParams['id'] = $result;
-                $instanceJob = new \My\Job\JobContentView();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeContentView', $p_arrParams);
+                $instanceJob = new \My\Job\JobViewContent();
+                $instanceJob->addJob(WORKER_PREFIX . 'writeContentView', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -142,8 +142,8 @@ class storageContentView extends AbstractTableGateway
             $result = $this->update($p_arrParams, 'id=' . $id);
             if ($result) {
                 $p_arrParams['id'] = $id;
-                $instanceJob = new \My\Job\JobContentView();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editContentView', $p_arrParams);
+                $instanceJob = new \My\Job\JobViewContent();
+                $instanceJob->addJob(WORKER_PREFIX . 'editContentView', $p_arrParams);
             }
             return $result;
         } catch (\Zend\Http\Exception $exc) {

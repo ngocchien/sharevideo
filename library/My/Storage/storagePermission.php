@@ -135,7 +135,7 @@ class storagePermission extends AbstractTableGateway {
                 $result = $this->lastInsertValue;
                 $p_arrParams['perm_id'] = $result;
                 $instanceJob = new \My\Job\JobPermission();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writePermission', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writePermission', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -200,7 +200,7 @@ class storagePermission extends AbstractTableGateway {
             if($result){
                 $p_arrParams['perm_id'] = $intPermissionID;
                 $instanceJob = new \My\Job\JobPermission();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editPermission', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editPermission', $p_arrParams);
             }
             return $result;
 

@@ -2,7 +2,7 @@
 
 namespace My\Job;
 
-use My\General;
+use My;
 
 class JobAdminProcess extends JobAbstract
 {
@@ -135,6 +135,99 @@ class JobAdminProcess extends JobAbstract
                 break;
         }
         return $service;
+    }
+
+    public function buildDataRedisContent($params = [])
+    {
+        if ($params->workload()) {
+            $arrParams = unserialize($params->workload());
+        }
+
+        if (empty($arrParams)) {
+            echo My\General::getColoredString("ERROR: Params is incorrent or empty ", 'light_cyan', 'red');
+        }
+
+        $instanceSearchContent = new My\Search\Content();
+        try {
+            switch ($arrParams['type']) {
+                case 'content-home-page':
+                    $instanceCategory = new My\Search\Category();
+                    $arrCategoryList = $instanceCategory->getList(
+                        [
+                            'cate_status' => 1
+                        ],
+                        [
+                            'cate_id'
+                        ]
+                    );
+
+                    if (!empty($arrCategoryList)) {
+                        $arrContentByCategory = [];
+                        foreach ($arrCategoryList as $arrCategory) {
+                            $arrContentByCategory[$arrCategory['cate_id']] = $instanceSearchContent->getListLimit(
+                                [
+                                    'cont_status' => 1,
+                                    'cate_id' => $arrCategory['cate_id']
+                                ],
+                                1,
+                                6,
+                                ['created_date' => ['order' => 'desc']],
+                                [
+                                    'cont_title',
+                                    'cont_slug',
+                                    'cont_id',
+                                    'cont_image',
+                                    'cont_views',
+                                    'cont_duration'
+                                ]
+                            );
+                        }
+                        if (!empty($arrContentByCategory)) {
+                            $redis = My\General::getRedisConfig();
+                            $redis->set(My\General::REDIS_KEY_CONT_HOME_PAGE, json_encode($arrContentByCategory));
+                            $redis->close();
+                        }
+                    }
+                    break;
+                case 'top-content-hot-now':
+                    $instanceSearchContentView = new My\Search\ContentView();
+                    $condition = [
+                        'created_date_lte' => date('Y-m-d'),
+                        'created_date_gte' => date('Y-m-d', strtotime('-1 days')),
+                    ];
+                    $limit = 20;
+                    $arrContent = $instanceSearchContentView->getContentTopDay($condition, $limit);
+                    if (!empty($arrContent)) {
+                        $redis = My\General::getRedisConfig();
+                        $redis->set(My\General::REDIS_KEY_CONTENT_TOP_DAY, json_encode($arrContent));
+                        $redis->close();
+                    }
+                    break;
+                case 'top-content-hot-week':
+                    $instanceSearchContentView = new My\Search\ContentView();
+                    $condition = [
+                        'created_date_lte' => date('Y-m-d'),
+                        'created_date_gte' => date('Y-m-d', strtotime('-7 days')),
+                    ];
+                    $limit = 20;
+                    $arrContent = $instanceSearchContentView->getContentTopDay($condition, $limit);
+                    if (!empty($arrContent)) {
+                        $redis = My\General::getRedisConfig();
+                        $redis->set(My\General::REDIS_KEY_CONTENT_TOP_WEEK, json_encode($arrContent));
+                        $redis->close();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (\Exception $exc) {
+            if (APPLICATION_ENV !== 'production') {
+                echo '<pre>';
+                print_r($exc->getMesseges());
+                echo '</pre>';
+                die();
+            }
+        }
     }
 
 }

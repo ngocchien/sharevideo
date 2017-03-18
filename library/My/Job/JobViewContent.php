@@ -4,7 +4,7 @@ namespace My\Job;
 
 use My\General;
 
-class JobContentView extends JobAbstract
+class JobViewContent extends JobAbstract
 {
     /*
      * save Content

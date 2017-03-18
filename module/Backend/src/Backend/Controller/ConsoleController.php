@@ -26,6 +26,20 @@ class ConsoleController extends MyController
         'content-view'
     ];
 
+    protected static $_arr_worker_run = [
+        'content' => 5,
+        'logs' => 1,
+        'category' => 1,
+        'user' => 1,
+        'general' => 1,
+        'keyword' => 1,
+        'group' => 1,
+        'permission' => 1,
+        'crawler' => 1,
+        'tag' => 5,
+        'admin-process' => 5,
+    ];
+
     public function __construct()
     {
         if (PHP_SAPI !== 'cli') {
@@ -642,7 +656,7 @@ class ConsoleController extends MyController
             if ($params['type'] || $params['background']) {
                 return General::getColoredString("Invalid params \n", 'light_cyan', 'red');
             }
-            exec("ps -ef | grep -v grep | grep 'type=" . WORKER_PREFIX . "-*' | awk '{ print $2 }'", $PID);
+            exec("ps -ef | grep -v grep | grep 'type=" . WORKER_PREFIX . "*' | awk '{ print $2 }'", $PID);
 
             if (empty($PID)) {
                 return General::getColoredString("Cannot found PID \n", 'light_cyan', 'red');
@@ -662,7 +676,7 @@ class ConsoleController extends MyController
             if ($params['type'] || $params['background']) {
                 return General::getColoredString("Invalid params \n", 'light_cyan', 'red');
             }
-            $stopWorkerName = WORKER_PREFIX . '-' . trim($params['stop']);
+            $stopWorkerName = WORKER_PREFIX . trim($params['stop']);
             exec("ps -ef | grep -v grep | grep 'type={$stopWorkerName}' | awk '{ print $2 }'", $PID);
             $PID = current($PID);
             if ($PID) {
@@ -674,238 +688,244 @@ class ConsoleController extends MyController
         }
 
         $worker = General::getWorkerConfig();
+
         switch ($params['type']) {
-            case WORKER_PREFIX . '-logs':
+            case WORKER_PREFIX . 'logs':
                 //start job in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-logs >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "logs >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-logs in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "logs in background. \n", 'light_cyan', 'red');
                         return;
                     } else {
-                        echo General::getColoredString("Job " . WORKER_PREFIX . "-logs is running in background ... \n", 'green');
+                        echo General::getColoredString("Job " . WORKER_PREFIX . "logs is running in background ... \n", 'green');
                     }
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeLog';
+                $funcName1 = WORKER_PREFIX . 'writeLog';
                 $methodHandler1 = '\My\Job\JobLog::writeLog';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-content':
+            case WORKER_PREFIX . 'content':
+
                 //start job in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-content >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "content >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-content in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "content in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-content is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "content is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeContent';
+                $funcName1 = WORKER_PREFIX . 'writeContent';
                 $methodHandler1 = '\My\Job\JobContent::writeContent';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editContent';
+                $funcName2 = WORKER_PREFIX . 'editContent';
                 $methodHandler2 = '\My\Job\JobContent::editContent';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
-                $funcName3 = SEARCH_PREFIX . 'multiEditContent';
+                $funcName3 = WORKER_PREFIX . 'multiEditContent';
                 $methodHandler3 = '\My\Job\JobContent::multiEditContent';
                 $worker->addFunction($funcName3, $methodHandler3, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-category':
+            case WORKER_PREFIX . 'category':
                 //start job in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-category >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "category >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-category in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "category in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-category is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "category is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeCategory';
+                $funcName1 = WORKER_PREFIX . 'writeCategory';
                 $methodHandler1 = '\My\Job\JobCategory::writeCategory';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editCategory';
+                $funcName2 = WORKER_PREFIX . 'editCategory';
                 $methodHandler2 = '\My\Job\JobCategory::editCategory';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
-                $funcName3 = SEARCH_PREFIX . 'multiEditCategory';
+                $funcName3 = WORKER_PREFIX . 'multiEditCategory';
                 $methodHandler3 = '\My\Job\JobCategory::multiEditCategory';
                 $worker->addFunction($funcName3, $methodHandler3, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-user':
+            case WORKER_PREFIX . 'user':
                 //start job in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-user >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "user >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-user in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "user in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-user is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "user is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeUser';
+                $funcName1 = WORKER_PREFIX . 'writeUser';
                 $methodHandler1 = '\My\Job\JobUser::writeUser';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editUser';
+                $funcName2 = WORKER_PREFIX . 'editUser';
                 $methodHandler2 = '\My\Job\JobUser::editUser';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
-                $funcName3 = SEARCH_PREFIX . 'multiEditUser';
+                $funcName3 = WORKER_PREFIX . 'multiEditUser';
                 $methodHandler3 = '\My\Job\JobUser::multiEditUser';
                 $worker->addFunction($funcName3, $methodHandler3, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-general':
+            case WORKER_PREFIX . 'general':
                 //start job in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-general >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "general >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-general in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "general in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-general is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "general is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeGeneral';
+                $funcName1 = WORKER_PREFIX . 'writeGeneral';
                 $methodHandler1 = '\My\Job\JobGeneral::writeGeneral';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editGeneral';
+                $funcName2 = WORKER_PREFIX . 'editGeneral';
                 $methodHandler2 = '\My\Job\JobGeneral::editGeneral';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-keyword':
+            case WORKER_PREFIX . 'keyword':
                 //start job in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-keyword >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "keyword >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-keyword in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "keyword in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-keyword is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "keyword is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeKeyword';
+                $funcName1 = WORKER_PREFIX . 'writeKeyword';
                 $methodHandler1 = '\My\Job\JobKeyword::writeKeyword';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editKeyword';
+                $funcName2 = WORKER_PREFIX . 'editKeyword';
                 $methodHandler2 = '\My\Job\JobKeyword::editKeyword';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-group':
+            case WORKER_PREFIX . 'group':
                 //start job group in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-group >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "group >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-group in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "group in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-group is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "group is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeGroup';
+                $funcName1 = WORKER_PREFIX . 'writeGroup';
                 $methodHandler1 = '\My\Job\JobGroup::writeGroup';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editGroup';
+                $funcName2 = WORKER_PREFIX . 'editGroup';
                 $methodHandler2 = '\My\Job\JobGroup::editGroup';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-permission':
+            case WORKER_PREFIX . 'permission':
                 //start job group in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-permission >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "permission >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-permission in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "permission in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-permission is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "permission is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writePermission';
+                $funcName1 = WORKER_PREFIX . 'writePermission';
                 $methodHandler1 = '\My\Job\JobPermission::writePermission';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editPermission';
+                $funcName2 = WORKER_PREFIX . 'editPermission';
                 $methodHandler2 = '\My\Job\JobPermission::editPermission';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-tag':
+            case WORKER_PREFIX . 'tag':
                 //start job group in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-tag >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "tag >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-tag in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "tag in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-tag is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "tag is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeTag';
+                $funcName1 = WORKER_PREFIX . 'writeTag';
                 $methodHandler1 = '\My\Job\JobTag::writeTag';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editTag';
+                $funcName2 = WORKER_PREFIX . 'editTag';
                 $methodHandler2 = '\My\Job\JobTag::editTag';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
 
                 break;
 
-            case WORKER_PREFIX . '-admin-process':
+            case WORKER_PREFIX . 'admin-process':
                 //start job group in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-admin-process >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "admin-process >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-admin-process in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "admin-process in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-admin-process is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "admin-process is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'updateDataDB';
+                $funcName1 = WORKER_PREFIX . 'updateDataDB';
                 $methodHandler1 = '\My\Job\JobAdminProcess::updateDataDB';
+                $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
+
+                $funcName1 = WORKER_PREFIX . 'buildDataRedisContent';
+                $methodHandler1 = '\My\Job\JobAdminProcess::buildDataRedisContent';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
                 break;
 
-            case WORKER_PREFIX . '-content-view':
+            case WORKER_PREFIX . 'content-view':
                 //start job group in background
                 if ($params['background'] === 'true') {
-                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "-content-view >/dev/null & echo 2>&1 & echo $!");
+                    $PID = shell_exec("nohup php " . PUBLIC_PATH . "/index.php worker --type=" . WORKER_PREFIX . "content-view >/dev/null & echo 2>&1 & echo $!");
                     if (empty($PID)) {
-                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "-content-view in background. \n", 'light_cyan', 'red');
+                        echo General::getColoredString("Cannot deamon PHP process to run job " . WORKER_PREFIX . "content-view in background. \n", 'light_cyan', 'red');
                         return;
                     }
-                    echo General::getColoredString("Job " . WORKER_PREFIX . "-content-view is running in background ... \n", 'green');
+                    echo General::getColoredString("Job " . WORKER_PREFIX . "content-view is running in background ... \n", 'green');
                 }
 
-                $funcName1 = SEARCH_PREFIX . 'writeContentView';
-                $methodHandler1 = '\My\Job\JobContentView::writeContentView';
+                $funcName1 = WORKER_PREFIX . 'writeContentView';
+                $methodHandler1 = '\My\Job\JobViewContent::writeContentView';
                 $worker->addFunction($funcName1, $methodHandler1, $this->serviceLocator);
 
-                $funcName2 = SEARCH_PREFIX . 'editContentView';
-                $methodHandler2 = '\My\Job\JobContentView::editContentView';
+                $funcName2 = WORKER_PREFIX . 'editContentView';
+                $methodHandler2 = '\My\Job\JobViewContent::editContentView';
                 $worker->addFunction($funcName2, $methodHandler2, $this->serviceLocator);
                 break;
             default:
@@ -928,37 +948,89 @@ class ConsoleController extends MyController
 
     public function checkWorkerRunningAction()
     {
-        $arr_worker = self::$_arr_worker;
-        foreach ($arr_worker as $worker) {
-            $worker_name = WORKER_PREFIX . '-' . $worker;
-            exec("ps -ef | grep -v grep | grep 'type={$worker_name}' | awk '{ print $2 }'", $PID);
-            $PID = current($PID);
+//        $arr_worker = self::$_arr_worker;
+//        foreach ($arr_worker as $worker) {
+//            $worker_name = WORKER_PREFIX . '-' . $worker;
+//            exec("ps -ef | grep -v grep | grep 'type={$worker_name}' | awk '{ print $2 }'", $PID);
+//            $PID = current($PID);
+//
+//            if (empty($PID)) {
+//                $command = 'nohup php ' . PUBLIC_PATH . '/index.php worker --type=' . $worker_name . ' >/dev/null & echo 2>&1 & echo $!';
+//                $PID = shell_exec($command);
+//                if (empty($PID)) {
+//                    echo General::getColoredString("Cannot deamon PHP process to run job {$worker_name} in background. \n", 'light_cyan', 'red');
+//                } else {
+//                    echo General::getColoredString("PHP process run job {$worker_name} in background with PID : {$PID}. \n", 'green');
+//                }
+//            }
+//        }
 
-            if (empty($PID)) {
+        $arr_worker = self::$_arr_worker_run;
+        foreach ($arr_worker as $worker => $number) {
+            $worker_name = WORKER_PREFIX . $worker;
+            for ($i = 0; $i < $number; $i++) {
+//                exec("ps -ef | grep -v grep | grep 'type={$worker_name}' | awk '{ print $2 }'", $PID);
+//                echo '<pre>';
+//                print_r($PID);
+//                echo '</pre>';
+//               // die();
+//
+//                if (count($PID) >= $number) {
+//                    break;
+//                }
                 $command = 'nohup php ' . PUBLIC_PATH . '/index.php worker --type=' . $worker_name . ' >/dev/null & echo 2>&1 & echo $!';
-                $PID = shell_exec($command);
-                if (empty($PID)) {
-                    echo General::getColoredString("Cannot deamon PHP process to run job {$worker_name} in background. \n", 'light_cyan', 'red');
-                } else {
-                    echo General::getColoredString("PHP process run job {$worker_name} in background with PID : {$PID}. \n", 'green');
-                }
+                shell_exec($command);
+//                sleep(1);
             }
         }
+
+        echo General::getColoredString("===== check success ===== \n", 'light_cyan', 'yellow');
     }
 
     public function crontabAction()
     {
+
         $params = $this->request->getParams();
+        $type = $params['type'];
 
-        if (empty($params['type'])) {
-            return General::getColoredString("Unknown type or id \n", 'light_cyan', 'red');
+        switch ($type) {
+            case '5min' :
+                break;
+
+            case '30min' : //set crontab 30 phut build content - hot - now
+                $p_arrParams = [
+                    'type' => 'top-content-hot-now'
+                ];
+                $instanceJob = new \My\Job\JobAdminProcess();
+                $instanceJob->addJob(WORKER_PREFIX . 'buildDataRedisContent', $p_arrParams);
+                break;
+
+            case '1hour' : //set crontab 1 hour build content - hot - week
+                $p_arrParams = [
+                    'type' => 'top-content-hot-week'
+                ];
+                $instanceJob = new \My\Job\JobAdminProcess();
+                $instanceJob->addJob(WORKER_PREFIX . 'buildDataRedisContent', $p_arrParams);
+                break;
+
+            case '2hour' : //set crontab clear caches
+//                $p_arrParams = [
+//                    'type' => 'top-content-hot-week'
+//                ];
+//
+//                $instanceJob = new \My\Job\JobAdminProcess();
+//                $instanceJob->addJob(WORKER_PREFIX . 'buildDataRedisContent', $p_arrParams);
+                break;
+            default :
+                break;
         }
-
-        switch ($params['type']) {
-        }
-
-        return true;
     }
+
+//    public function clearCacheSystem()
+//    {
+//        $command = 'nohup php ' . PUBLIC_PATH . '/index.php worker --type=' . $worker_name . ' >/dev/null & echo 2>&1 & echo $!';
+//        shell_exec($command);
+//    }
 
     public function crawlerKeywordAction()
     {
@@ -1173,7 +1245,7 @@ class ConsoleController extends MyController
         $start_date = date_create(self::$_start_date);
         $current_date = date_create(date('Y-m-d'));
         $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 500;
+        $lte_id = $diff->format('%a') * 2000;
 
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/post-' . $intPage . '.xml';
@@ -1227,7 +1299,7 @@ class ConsoleController extends MyController
         $start_date = date_create(self::$_start_date);
         $current_date = date_create(date('Y-m-d'));
         $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 500;
+        $lte_id = $diff->format('%a') * 2000;
 
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/keyword-' . $intPage . '.xml';
@@ -1281,7 +1353,7 @@ class ConsoleController extends MyController
         $start_date = date_create(self::$_start_date);
         $current_date = date_create(date('Y-m-d'));
         $diff = date_diff($start_date, $current_date);
-        $lte_id = $diff->format('%a') * 1000;
+        $lte_id = $diff->format('%a') * 2000;
 
         for ($intPage = 1; $intPage < 10000; $intPage++) {
             $file = PUBLIC_PATH . '/maps/tag-' . $intPage . '.xml';
@@ -2058,6 +2130,14 @@ class ConsoleController extends MyController
 
             exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
 
+            //run job build content - home page
+            $p_arrParams = [
+                'type' => 'content-home-page'
+            ];
+
+            $instanceJob = new \My\Job\JobAdminProcess();
+            $instanceJob->addJob(WORKER_PREFIX . 'buildDataRedisContent', $p_arrParams);
+
             return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php videos-youtube-new --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
         } catch (\Exception $exc) {
             if (APPLICATION_ENV !== 'production') {
@@ -2110,7 +2190,7 @@ class ConsoleController extends MyController
             unset($instanceSearchTag);
 
             $instanceSearchKeyWord = new \My\Search\Keyword();
-            $end_tag_id = $arrTagList[49]['tag_id']+1;
+            $end_tag_id = $arrTagList[49]['tag_id'] + 1;
             foreach ($arrTagList as $tag) {
                 $is_exits = $instanceSearchKeyWord->getDetail(['key_slug' => $tag['tag_slug']]);
 

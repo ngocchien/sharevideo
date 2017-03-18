@@ -91,7 +91,14 @@ class IndexController extends MyController
 
     public function indexAction()
     {
+        return;
+        $p_arrParams = [
+            'type' => 'top-content-hot-now'
+        ];
 
+        $instanceJob = new \My\Job\JobAdminProcess();
+        $instanceJob->addJob(WORKER_PREFIX . 'buildDataRedisContent', $p_arrParams);
+        die('DONE');
         return;
 //
         $arr_cate_channel = include_once(WEB_ROOT . '/data/list-channel.php');

@@ -6,7 +6,7 @@
                 ?>
                 <div class="no1">
                     <div class="post"
-                         style="background-image: url(<?php echo UPLOAD_URL.$arr_image['640x480'] ?>)">
+                         style="background-image: url(<?php echo UPLOAD_URL . $arr_image['640x480'] ?>)">
                         <img src="<?php echo STATIC_URL; ?>/images/bg-default-565x565.jpg"
                              alt="Default Background"
                              class="bg-default"
@@ -34,7 +34,7 @@
                 <?php endif; ?>
                 <div class="top">
                     <div class="post"
-                         style="background-image: url(<?php echo UPLOAD_URL.$arr_image['480x360'] ?>);">
+                         style="background-image: url(<?php echo UPLOAD_URL . $arr_image['480x360'] ?>);">
                         <img src="<?php echo STATIC_URL; ?>/images/bg-default-565x565.jpg"
                              alt="Default Background"
                              class="bg-default"
@@ -80,7 +80,7 @@
                                 <div class="container">
                                     <div class="post">
                                         <div class="poster"
-                                             style="background-image: url(<?php echo UPLOAD_URL.$arr_img['480x360'] ?>);">
+                                             style="background-image: url(<?php echo UPLOAD_URL . $arr_img['480x360'] ?>);">
                                             <img src="<?php echo STATIC_URL; ?>/images/bg-default-238x151.jpg"
                                                  alt="Default Background"
                                                  class="bg-default"
@@ -137,9 +137,9 @@
                                 ?>
                                 <div class="post">
                                     <div class="poster"
-                                         style="background-image: url(<?php echo UPLOAD_URL.$arr_img['320x180'] ?>);">
+                                         style="background-image: url(<?php echo UPLOAD_URL . $arr_img['320x180'] ?>);">
                                         <div class="bg-gradient"></div>
-                                        <p class="number top1"><?php echo $key + 1; ?></p>
+                                        <p class="number top1"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT); ?></p>
                                         <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]); ?>"
                                            title="<?php echo $arr_content['cont_title']; ?>"
                                            class="link">
@@ -164,6 +164,51 @@
                         </div>
                     </div>
                 </div>
+                <?php if ($this->arrHotTopWeek): ?>
+                    <div class="type feature">
+                        <h4 class="name">
+                            <img src="<?php echo STATIC_URL; ?>/fe/images/homepage/icon-feature-42x57.png"
+                                 alt="icon"/>
+                            <a href="ranking.html">TOP WEEKLY</a>
+                            <span></span>
+                        </h4>
+                        <div class="container">
+                            <div class="bg-type">
+                                <img src="<?php echo STATIC_URL; ?>/fe/images/homepage/bg-feature-700x226.jpg"
+                                     alt="Default Background"/>
+                            </div>
+                            <div class="videos">
+                                <?php foreach ($this->arrHotTopWeek as $key => $arr_content):
+                                    $arr_img = json_decode($arr_content['cont_image'], true);
+                                    ?>
+                                    <div class="post">
+                                        <div class="poster"
+                                             style="background-image: url(<?php echo UPLOAD_URL . $arr_img['320x180'] ?>)">
+                                            <div class="bg-gradient"></div>
+                                            <p class="number top1"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT); ?></p>
+                                            <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]); ?>"
+                                               class="link"></a>
+                                        </div>
+                                        <div class="content">
+                                            <h3 class="title">
+                                                <a href="<?php echo $this->Url('view-content', ['contentSlug' => $arr_content['cont_slug'], 'contentId' => $arr_content['cont_id']]); ?>"
+                                                   title="<?php echo $arr_content['cont_title']; ?>">
+                                                    <?php echo $arr_content['cont_title']; ?>
+                                                </a>
+                                            </h3>
+                                            <p class="view">
+                                            <span class="number">
+                                                <?php echo number_format($arr_content['cont_views']); ?>
+                                            </span>
+                                                view
+                                            </p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -183,7 +228,7 @@
                         ?>
                         <div class="post">
                             <div class="poster"
-                                 style="background-image: url(<?php echo UPLOAD_URL.$arr_img['320x180'] ?>);">
+                                 style="background-image: url(<?php echo UPLOAD_URL . $arr_img['320x180'] ?>);">
                                 <div class="bg-gradient"></div>
                                 <p class="duration"><?php echo \My\General::formatDurationLength($arr_content['cont_duration']) ?></p>
                                 <p class="view">

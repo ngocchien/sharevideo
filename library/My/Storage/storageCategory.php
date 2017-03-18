@@ -119,7 +119,7 @@ class storageCategory extends AbstractTableGateway
                 $result = $this->lastInsertValue;
                 $p_arrParams['cate_id'] = $result;
                 $instanceJob = new \My\Job\JobCategory();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeCategory', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeCategory', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -143,7 +143,7 @@ class storageCategory extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['cate_id'] = $intCateID;
                 $instanceJob = new \My\Job\JobCategory();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editCategory', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editCategory', $p_arrParams);
             }
             return $result;
         } catch (\Zend\Http\Exception $exc) {

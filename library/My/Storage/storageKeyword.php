@@ -38,7 +38,7 @@ class storageKeyword extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['key_id'] = $result;
                 $instanceJob = new \My\Job\JobKeyword();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeKeyword', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeKeyword', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -61,7 +61,7 @@ class storageKeyword extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['key_id'] = $id;
                 $instanceJob = new \My\Job\JobContent();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editKeyword', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editKeyword', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {

@@ -123,7 +123,7 @@ class storageUser extends AbstractTableGateway
                 $result = $this->lastInsertValue;
                 $p_arrParams['user_id'] = $result;
                 $instanceJob = new \My\Job\JobUser();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeUser', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeUser', $p_arrParams);
             }
 
             return $result;
@@ -151,7 +151,7 @@ class storageUser extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['user_id'] = $intUserID;
                 $instanceJob = new \My\Job\JobUser();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editUser', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editUser', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {

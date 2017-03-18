@@ -34,7 +34,7 @@ class storageLogs extends AbstractTableGateway {
                  */
                 $p_arrParams['log_id'] = $result;
                 $instanceJob = new \My\Job\JobLog();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeLog', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeLog', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {

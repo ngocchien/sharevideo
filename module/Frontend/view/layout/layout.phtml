@@ -5,7 +5,7 @@
     <?php echo \My\Minifier\HtmlMin::minify($this->headTitle()); ?>
     <!-- render Meta -->
     <?php echo \My\Minifier\HtmlMin::minify($this->headMeta()); ?>
-    <meta name="google-site-verification" content="5X7P80qe06r7jOWjvOGjrc4rNCAzn8p2pCwKqiA9NbE" />
+    <meta name="google-site-verification" content="5X7P80qe06r7jOWjvOGjrc4rNCAzn8p2pCwKqiA9NbE"/>
     <!-- render headLink -->
     <?php echo $this->headLink(); ?>
     <script>
@@ -28,21 +28,23 @@
             js.src = "//connect.facebook.net/en_US/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
+        <?php if (APPLICATION_ENV == 'production') {?>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function ()
+                {
+                    (i[r] . q = i[r] . q || []) . push(arguments)
+                    }, i[r] . l = 1 * new Date();
+                a = s . createElement(o),
+                    m = s . getElementsByTagName(o)[0];
+                a . async = 1;
+                a . src = g;
+                m . parentNode . insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-93374227-1', 'auto');
-        ga('send', 'pageview');
+            ga('create', 'UA-93374227-1', 'auto');
+            ga('send', 'pageview');
+        <?php }?>
     </script>
 </head>
 <body>

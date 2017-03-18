@@ -226,10 +226,10 @@ class ContentView extends SearchAbstract
         return false;
     }
 
-    public function getContentTopWeek($arrConditions = [])
+    public function getContentTopWeek($arrConditions = [], $limit = 15)
     {
         $termsAgg = new \Elastica\Aggregation\Terms("group_by");
-        $termsAgg->setField("cont_id")->setOrder('sum', 'DESC')->setSize(15);
+        $termsAgg->setField("cont_id")->setOrder('sum', 'DESC')->setSize($limit);
 
         $agg = new Sum('sum');
         $agg->setField('view');
@@ -276,13 +276,13 @@ class ContentView extends SearchAbstract
         return array_values($arr_data_temp);
     }
 
-    public function getContentTopDay($arrConditions = [])
+    public function getContentTopDay($arrConditions = [], $limit = 15)
     {
         $boolQuery = new Bool();
         $boolQuery = $this->__buildWhere($arrConditions, $boolQuery);
 
         $query = new ESQuery();
-        $query->setSize(15)
+        $query->setSize($limit)
             ->setSort(['view' => ['order' => 'desc']]);
         $query->setQuery($boolQuery);
         $query->setSource(['cont_id']);

@@ -39,6 +39,12 @@ class General
     const SOCIAL_GOOGLE_PLUS_URL = 'https://www.facebook.com/Share-Video-Community-616628808543081/';
     const SOCIAL_TWITTER_URL = 'https://www.facebook.com/Share-Video-Community-616628808543081/';
 
+    const REDIS_KEY_CONT_HOME_PAGE = 'key_cont_home_page';
+    const REDIS_KEY_HOT_CONT_HOME_PAGE = 'key_cont_hot_home_page';
+
+    const REDIS_KEY_CONTENT_TOP_DAY = 'key_content_top_day';
+    const REDIS_KEY_CONTENT_TOP_WEEK = 'key_content_top_week';
+
     static $foreground_colors = array(
         'black' => '0;30', 'dark_gray' => '1;30',
         'blue' => '0;34', 'light_blue' => '1;34',
@@ -411,20 +417,11 @@ class General
      * Get Redis config for pageview, comment, notification, banned user ... etc
      * @param String $strType
      */
-    public static function getRedisConfig($strType)
+    public static function getRedisConfig()
     {
         $redis = new \Redis();
         $redis->connect('127.0.0.1', 6379, 15);
 
-        switch ($strType) {
-            case 'cart':
-                $redis->setOption(\Redis::OPT_PREFIX, 'Amazon247:cart:');
-                $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
-                $redis->select(6);
-                break;
-            default:
-                break;
-        }
         return $redis;
     }
 

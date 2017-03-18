@@ -127,7 +127,7 @@ class storageTags extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['tag_id'] = $result;
                 $instanceJob = new \My\Job\JobTag();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeTag', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeTag', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
@@ -152,7 +152,7 @@ class storageTags extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['tag_id'] = $intTagID;
                 $instanceJob = new \My\Job\JobTag();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editTag', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editTag', $p_arrParams);
             }
             return $result;
         } catch (\Zend\Http\Exception $exc) {

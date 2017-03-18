@@ -28,7 +28,7 @@ define('CONFIG_CACHE_DIR', WEB_ROOT . '/config/config-cache');
 define('SES_EXPIRED', 7776000);
 define('CLI_DEBUG', 0);
 define('SEARCH_PREFIX', 'share_data_');
-define('WORKER_PREFIX', 'share');
+define('WORKER_PREFIX', 'share-');
 define('LOG_FOLDER', WEB_ROOT . '/logs');
 
 // Setup autoloading

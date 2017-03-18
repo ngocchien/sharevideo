@@ -118,7 +118,7 @@ class storageGroup extends AbstractTableGateway
                 $result = $this->lastInsertValue;
                 $p_arrParams['group_id'] = $result;
                 $instanceJob = new \My\Job\JobGroup();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeGroup', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeGroup', $p_arrParams);
             }
             return $result;
         } catch (\Zend\Http\Exception $exc) {
@@ -141,7 +141,7 @@ class storageGroup extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['group_id'] = $groupId;
                 $instanceJob = new \My\Job\JobGroup();
-                $instanceJob->addJob(SEARCH_PREFIX . 'editGroup', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'editGroup', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
