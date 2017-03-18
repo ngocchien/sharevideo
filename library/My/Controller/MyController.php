@@ -180,30 +180,40 @@ class MyController extends AbstractActionController
         }
 
         if ($arrData['module'] === 'frontend') {
-            $instanceSearchCategory = new \My\Search\Category();
-            $arrCategoryList = $instanceSearchCategory->getList(
-                ['cate_status' => 1],
-                [
-                    'cate_id',
-                    'cate_name',
-                    'cate_slug',
-                    'cate_sort',
-                    'cate_meta_title',
-                    'cate_meta_keyword',
-                    'cate_meta_description',
-                    'cate_description',
-                    'parent_id',
-                    'cate_img_url'
-                ],
-                ['cate_sort' => ['order' => 'asc'], 'cate_id' => ['order' => 'asc']]
-            );
-            $arrCategoryFormat = [];
+            $redis = General::getRedisConfig();
+            $arrCategoryFormat = $redis->get(General::REDIS_KEY_LIST_CATEGORY);
+            if (empty($arrCategoryFormat)) {
+                $instanceSearchCategory = new \My\Search\Category();
+                $arrCategoryList = $instanceSearchCategory->getList(
+                    ['cate_status' => 1],
+                    [
+                        'cate_id',
+                        'cate_name',
+                        'cate_slug',
+                        'cate_sort',
+                        'cate_meta_title',
+                        'cate_meta_keyword',
+                        'cate_meta_description',
+                        'cate_description',
+                        'parent_id',
+                        'cate_img_url'
+                    ],
+                    ['cate_sort' => ['order' => 'asc'], 'cate_id' => ['order' => 'asc']]
+                );
+                $arrCategoryFormat = [];
 
-            if (!empty($arrCategoryList)) {
-                foreach ($arrCategoryList as $arrCategory) {
-                    $arrCategoryFormat[$arrCategory['cate_id']] = $arrCategory;
+                if (!empty($arrCategoryList)) {
+                    foreach ($arrCategoryList as $arrCategory) {
+                        $arrCategoryFormat[$arrCategory['cate_id']] = $arrCategory;
+                    }
                 }
+                $redis->set(General::REDIS_KEY_LIST_CATEGORY, json_encode($arrCategoryFormat));
+            } else {
+                $arrCategoryFormat = json_decode($arrCategoryFormat, true);
             }
+
+            $redis->close();
+
             define('ARR_CATEGORY', serialize($arrCategoryFormat));
 
             //lấy 15 Tag mới nhất
@@ -219,28 +229,9 @@ class MyController extends AbstractActionController
                     'tag_id'
                 ]
             );
+
             define('ARR_TAG', serialize($arrTag));
-
-            //get list content hot
-//            $instanceSearchContent = new \My\Search\Content();
-//            $arr_content_hot = $instanceSearchContent->getListLimit(
-//                ['cont_status' => 1],
-//                1,
-//                10,
-//                ['cont_views' => ['order' => 'desc']],
-//                [
-//                    'cont_title',
-//                    'cont_slug',
-//                    'cont_main_image',
-//                    'cont_description',
-//                    'cont_id'
-//                ]
-//            );
-//            define('ARR_CONTENT_HOT_LIST', serialize($arr_content_hot));
-
-
             define('KEYWORD_SEARCH', !empty($arrData['keyword']) && $arrData['action'] == 'index' && $arrData['controller'] == 'search' ? $arrData['keyword'] : NULL);
-
             unset($arrKeywordList, $arr_content_hot, $instanceSearchCategory, $arrCategory, $arrCategoryParentList, $arrCategoryByParent, $arrCategoryFormat);
         }
     }

@@ -45,6 +45,8 @@ class General
     const REDIS_KEY_CONTENT_TOP_DAY = 'key_content_top_day';
     const REDIS_KEY_CONTENT_TOP_WEEK = 'key_content_top_week';
 
+    const REDIS_KEY_LIST_CATEGORY = 'cate:list';
+
     static $foreground_colors = array(
         'black' => '0;30', 'dark_gray' => '1;30',
         'blue' => '0;34', 'light_blue' => '1;34',
