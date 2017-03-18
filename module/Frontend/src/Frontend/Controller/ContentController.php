@@ -37,7 +37,7 @@ class ContentController extends MyController
                 return $this->redirect()->toRoute('view-content', ['contentSlug' => $arrContent['cont_slug'], 'contentId' => $cont_id]);
             }
 
-            if (!General::bot_detected()) {
+           // if (!General::bot_detected()) {
                 //update số lần view
                 $arrParamsJob = [
                     'object_name' => 'content',
@@ -50,7 +50,7 @@ class ContentController extends MyController
                 ];
                 $instanceJob = new \My\Job\JobAdminProcess();
                 $instanceJob->addJob(WORKER_PREFIX . 'updateDataDB', $arrParamsJob);
-            }
+            //}
 
             /*
              render meta
