@@ -38,6 +38,7 @@ class ConsoleController extends MyController
         'crawler' => 1,
         'tag' => 5,
         'admin-process' => 5,
+        'content-view' => 5
     ];
 
     public function __construct()
