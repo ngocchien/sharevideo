@@ -671,7 +671,6 @@ class ConsoleController extends MyController
         }
 
         $arr_worker = self::$_arr_worker;
-
         if (in_array(trim($params['stop']), $arr_worker)) {
             if ($params['type'] || $params['background']) {
                 return General::getColoredString("Invalid params \n", 'light_cyan', 'red');
