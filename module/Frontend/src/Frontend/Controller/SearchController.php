@@ -224,11 +224,11 @@ class SearchController extends MyController
             $this->renderer->headTitle(html_entity_decode('Danh sách từ khoá trang ' . $intPage) . \My\General::TITLE_META);
             $this->renderer->headMeta()->setProperty('url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('list-keyword', array('page' => $intPage)));
             $this->renderer->headMeta()->appendName('og:url', \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('list-keyword', array('page' => $intPage)));
-            $this->renderer->headMeta()->appendName('title', html_entity_decode('Danh sách từ khoá trang ' . $intPage) . General::TITLE_META);
-            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode('Danh sách từ khoá trang ' . $intPage) . General::TITLE_META);
-            $this->renderer->headMeta()->appendName('keywords', html_entity_decode('Danh sách từ khoá trang ' . $intPage));
-            $this->renderer->headMeta()->appendName('description', html_entity_decode('Danh sách từ khoá trang ' . $intPage . General::TITLE_META));
-            $this->renderer->headMeta()->appendName('og.description', html_entity_decode('Danh sách từ khoá trang ' . $intPage) . General::TITLE_META);
+            $this->renderer->headMeta()->appendName('title', html_entity_decode('List keyword page ' . $intPage) . General::TITLE_META);
+            $this->renderer->headMeta()->setProperty('og:title', html_entity_decode('List keyword page ' . $intPage) . General::TITLE_META);
+            $this->renderer->headMeta()->appendName('keywords', html_entity_decode('List keyword page ' . $intPage));
+            $this->renderer->headMeta()->appendName('description', html_entity_decode('List keyword page ' . $intPage . General::TITLE_META));
+            $this->renderer->headMeta()->appendName('og.description', html_entity_decode('List keyword page ' . $intPage) . General::TITLE_META);
             $this->renderer->headLink(array('rel' => 'amphtml', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('list-keyword', array())));
             $this->renderer->headLink(array('rel' => 'canonical', 'href' => \My\General::SITE_DOMAIN_FULL . $this->url()->fromRoute('list-keyword', array())));
 
