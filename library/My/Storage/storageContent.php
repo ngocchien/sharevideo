@@ -130,7 +130,7 @@ class storageContent extends AbstractTableGateway
             if ($result) {
                 $p_arrParams['cont_id'] = $result;
                 $instanceJob = new \My\Job\JobContent();
-                $instanceJob->addJob(SEARCH_PREFIX . 'writeContent', $p_arrParams);
+                $instanceJob->addJob(WORKER_PREFIX . 'writeContent', $p_arrParams);
             }
             return $result;
         } catch (\Exception $exc) {
