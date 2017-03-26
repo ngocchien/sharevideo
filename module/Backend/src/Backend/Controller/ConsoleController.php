@@ -168,10 +168,6 @@ class ConsoleController extends MyController
 
                 $this->flush();
             }
-            echo '<pre>';
-            print_r($arrDocument);
-            echo '</pre>';
-            die();
 
             unset($arrList); //release memory
             echo General::getColoredString("Migrating " . count($arrDocument) . " documents, please wait...", 'yellow');
