@@ -2080,6 +2080,9 @@ class ConsoleController extends MyController
                     $arr_image_yb = empty($item->getSnippet()->getThumbnails()['modelData']) ? [] : $item->getSnippet()->getThumbnails()['modelData'];
 
                     foreach ($arr_image_yb as $thumbnail) {
+                        if ($thumbnail['width'] == '1280') {
+                            continue;
+                        }
                         $size = $thumbnail['width'] . 'x' . $thumbnail['height'];
                         $arr_image[$size] = \My\General::crawlerImage($thumbnail['url'], $title, $size);
                     }
