@@ -37,7 +37,7 @@ class Content extends SearchAbstract
         //create new index
         $searchIndex->create([
             'name' => 'translations',
-            'number_of_shards' => 5,
+            'number_of_shards' => 2,
             'number_of_replicas' => 0,
             'analysis' => [
                 'analyzer' => [
