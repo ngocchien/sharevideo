@@ -224,7 +224,7 @@ return array(
                 ),
                 'migrate-content' => array(
                     'options' => array(
-                        'route' => 'migrate-content [--createindex=] [--page=] [--limit=] [isdev]',
+                        'route' => 'migrate-content [--createindex=] [--page=] [--limit=] [--pid=] [isdev]',
                         'defaults' => array(
                             '__NAMESPACE__' => 'Backend\Controller',
                             'controller' => 'console',
