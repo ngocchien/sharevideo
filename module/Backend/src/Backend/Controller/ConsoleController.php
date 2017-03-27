@@ -2395,4 +2395,59 @@ class ConsoleController extends MyController
         return $copy;
     }
 
+    public function migrateContentAction()
+    {
+        $params = $this->request->getParams();
+        $intIsCreateIndex = $params['createindex'];
+        $intPage = $params['page'] ? $params['page'] : 1;
+        $intLimit = $params['limit'] ? $params['limit'] : 2000;
+        $pid = $params['pid'];
+
+        if (!empty($pid)) {
+            shell_exec('kill -9 ' . $pid);
+        }
+
+        $serviceContent = $this->serviceLocator->get('My\Models\Content');
+        $instanceSearchContent = new \My\Search\Content();
+
+        $arrContentList = $serviceContent->getListLimit([], $intPage, $intLimit, 'cont_id ASC');
+        if (empty($arrContentList)) {
+            return true;
+        }
+
+        if ($intPage == 1) {
+            if ($intIsCreateIndex) {
+                $instanceSearchContent->createIndex();
+            } else {
+                $result = $instanceSearchContent->removeAllDoc();
+                if (empty($result)) {
+                    $this->flush();
+                    return General::getColoredString("Cannot delete old search index \n", 'light_cyan', 'red');
+                }
+            }
+        }
+
+        $arrDocument = [];
+        foreach ($arrContentList as $arrContent) {
+            $id = (int)$arrContent['cont_id'];
+
+            $arrDocument[] = new \Elastica\Document($id, $arrContent);
+            echo General::getColoredString("Created new document with cont_id = " . $id . " Successfully", 'cyan');
+
+            $this->flush();
+        }
+
+        unset($arrContentList); //release memory
+        echo General::getColoredString("Migrating " . count($arrDocument) . " documents, please wait...", 'yellow');
+
+        $instanceSearchContent->add($arrDocument);
+        echo General::getColoredString("Migrated " . count($arrDocument) . " documents successfully", 'blue', 'cyan');
+
+        unset($arrDocument);
+        $this->flush();
+
+        exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
+        
+        return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php migrate-content --page=' . ($intPage + 1) . ' --limit=' . $intLimit . ' --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
+    }
 }

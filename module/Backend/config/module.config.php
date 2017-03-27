@@ -221,6 +221,16 @@ return array(
                             'action' => 'control-worker'
                         ),
                     ),
+                ),
+                'migrate-content' => array(
+                    'options' => array(
+                        'route' => 'migrate-content [--createindex=] [--page=] [--limit=] [isdev]',
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Backend\Controller',
+                            'controller' => 'console',
+                            'action' => 'migrate-content'
+                        ),
+                    ),
                 )
             )
         )
