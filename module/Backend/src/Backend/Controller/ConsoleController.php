@@ -2446,7 +2446,7 @@ class ConsoleController extends MyController
         unset($arrDocument);
         $this->flush();
 
-        exec("ps -ef | grep -v grep | grep videos-youtube | awk '{ print $2 }'", $PID);
+        exec("ps -ef | grep -v grep | grep migrate-content | awk '{ print $2 }'", $PID);
         
         return shell_exec('nohup php ' . PUBLIC_PATH . '/index.php migrate-content --page=' . ($intPage + 1) . ' --limit=' . $intLimit . ' --pid=' . current($PID) . ' >/dev/null & echo 2>&1 & echo $!');
     }
