@@ -23,12 +23,13 @@ class StaticManager
         $this->strResource = $strResource;
         $this->serviceLocator = $serviceLocator;
         $extension_js = APPLICATION_ENV === 'development' ? '.debug' : '';
+        $extension_css = APPLICATION_ENV === 'development' ? '' : '.min';
 
         list($strModule, $strController, $strAction) = explode(':', $strResource);
         switch ($strModule) {
             case 'frontend':
                 $str_js = 'library/jquery.min.js,my/static' . $extension_js . '.js';
-                $str_css = 'fonts.css,styleb2d3.css,mobile9efa.css';
+                $str_css = 'fonts' . $extension_css . '.css,styleb2d3' . $extension_css . '.css,mobile9efa' . $extension_css . '.css';
                 switch ($strController) {
                     case 'index' :
                         $str_js .= ',my/index' . $extension_js . '.js';
